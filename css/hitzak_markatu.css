@@ -1,0 +1,59 @@
+#hitz-ontzia {
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    min-height: 100px;    
+}
+
+.hitz-ontzia-spana {
+    background-color: #f5f5f5;
+    border: 1px solid #bbbbbb;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    color: #555555;
+    display: inline-block;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 13px;
+    margin: 0 5px 5px 0;
+    padding: 4px;
+    text-decoration: none;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    vertical-align: middle;
+}
+
+.hitz-ontzia-spana-x {
+    color: #333;
+    font-weight: bold;
+    margin-left: 4px;
+    cursor: pointer;
+}
+.zerrenda-erantzun-zuzena .hitz-ontzia-spana-x {
+      color: #FFF;
+}
+.zerrenda-erantzun-okerra .hitz-ontzia-spana-x {
+      color: #FFF;
+}
+.zerrenda-erantzun-zuzena {
+    background-color: green;
+    color:#FFF;
+}
+
+.zerrenda-erantzun-okerra {
+    background-color: red;
+    color:#FFF;
+}
+
+#transkribapena-edukia span.hipertranskribapena-erantzun-zuzena, #target-content span.hipertranskribapena-erantzun-zuzena {
+    color: green !important;
+}
+
+#transkribapena-edukia span.hipertranskribapena-erantzun-okerra, #target-content span.hipertranskribapena-erantzun-okerra {
+    color: red !important;
+}
+
+#zerrenda-edukinontzia-botoiak {
+    text-align: center;
+}
+
+#ikus-entzunezkoa-edukinontzia #jp_container_1 {
+    margin-top: 0px; /* #hitz-ontzia-ren altuera berdinean egon dadin, bestela 20px dauka. */
+}

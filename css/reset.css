@@ -1,0 +1,38 @@
+@charset "utf-8";
+/*  
+Theme Name: Oarsoarrak
+Theme URL: http://www.oarsoarrak.com/
+Version: 1.0
+Author: 2010 - iametza interaktiboa
+Author URL: http://www.iametza.com/
+
+
+FUENTEAK
+------------------------------------------------
+Orokorra	Graublau, Verdana, Arial, Helvetica, Sans-Serif;
+------------------------------------------------
+
+KOLOREAK
+------------------------------------------------
+#FFFFFF		Gorputz kolorea	 	Txuria
+#333333		Testuen kolorea	 	Gris iluna
+------------------------------------------------
+
+ESKALA
+------------------------------------------------
+960px (1024x768 min) Eskalablea.
+------------------------------------------------
+*/
+
+
+/* ----------------------------------------------- Reset */
+
+ul,ol,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,pre,form,body,html,p,blockquote,address,fieldset,input,table,th,td{ margin:0; padding:0;}
+
+ul,ol {list-style:none;}
+
+a{text-decoration:none;}
+
+a img {border: none;}
+
+q:before,q:after{content:"";}

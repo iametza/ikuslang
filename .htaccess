@@ -1,0 +1,13 @@
+RewriteEngine On
+#RewriteOptions MaxRedirects=1
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?ids=$1 [L,QSA]
+
+AddType video/mp4 .mp4 .m4v
+AddType video/ogg .ogv .ogg
+AddType video/webm .webm
+
+php_value upload_max_filesize 100M
+php_value post_max_size 100M

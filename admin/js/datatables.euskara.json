@@ -1,0 +1,24 @@
+{
+    "sProcessing":     "Procesando...",
+    "sLengthMenu":     "_MENU_ erregistro erakutsi",
+    "sZeroRecords":    "Ez da emaitzarik aurkitu",
+    "sEmptyTable":     "Ez dago daturik taula honetan",
+    "sInfo":           "_START_(e)tik - _END_(e)rako erregistroak erakusten, guztira _TOTAL_",
+    "sInfoEmpty":      "0tik - 0rako erregistroak erakusten, guztira 0",
+    "sInfoFiltered":   "(_MAX_ erregistrotik iragaztia)",
+    "sInfoPostFix":    "",
+    "sSearch":         "Bilatu:",
+    "sUrl":            "",
+    "sInfoThousands":  ",",
+    "sLoadingRecords": "Kargatzen...",
+    "oPaginate": {
+        "sFirst":    "Lehena",
+        "sLast":     "Azkena",
+        "sNext":     "Hurrengoa",
+        "sPrevious": "Aurrekoa"
+    },
+    "oAria": {
+        "sSortAscending":  ": Aktibatu zutabea goranzko moduan ordenatzeko",
+        "sSortDescending": ": Aktibatu zutabea beheranzko moduan ordenatzeko"
+    }
+}

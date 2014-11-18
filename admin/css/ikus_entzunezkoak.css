@@ -1,0 +1,14 @@
+#bideoa-aurrebista-erreproduktorea {
+    width: 100%;
+}
+
+#ezagutza_txt_modal
+{
+    width: 700px; 
+    margin-top: -300px !important;
+    margin-left:  -350px !important; 
+} 
+
+#ezagutza_txt_modal .modal-body {
+    max-height: 525px;
+}
