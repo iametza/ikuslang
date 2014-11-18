@@ -1,4 +1,4 @@
-Aditranskrib
+Ikuslang
 ============
 
 Konfigurazioa
