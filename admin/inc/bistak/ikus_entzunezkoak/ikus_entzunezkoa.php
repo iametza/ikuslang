@@ -3,7 +3,7 @@
 
 <script type="text/javascript">
     
-	function verif() {
+	/*function verif() {
 		var patroi_hutsik = /^\s*$/;
 		
         // Fitxa aldatzen ari bagara eta erabiltzaileak ez badu ikus-entzunezko fitxategirik gehitu eta dagoeneko ez badago fitxategirik ez utzi gordetzen.
@@ -15,7 +15,7 @@
         }
         
 		return (confirm ("Ziur zaude ikus-entzunezkoa gorde nahi duzula?"));
-	}
+	}*/
 	
     $(document).ready(function() {
 		
@@ -29,262 +29,10 @@
         
         $("#editatu-hipertranskribapena-botoia").click(function() {
 			
-			window.location = "<?php echo $url_base; ?>editatu-hipertranskribapena&edit_id=<?php echo $edit_id; ?>";
+			window.location = "<?php echo $url_base; ?>editatu-hipertranskribapena?edit_id=<?php echo $edit_id; ?>";
             
 		});
         
-        $(document).on("click", "#editatu_hizlaria_kolorea", function() {
-            
-        	// Hau gabe scroll egitean kolore-hautatzailea ezkutatu ondoren ezin zen berriz bistaratu.
-        	document.getElementById("editatu_hizlaria_kolorea").color.showPicker();
-            
-        });
-        
-        $(document).on('shown', '#editatu_hizlaria', function() {
-            
-            // Hizlaria editatzeko modala bistaratzean edukien scrolla gora eraman
-            $("#editatu_hizlaria .modal-body").scrollTop(0);
-            
-            $("#editatu_hizlaria .modal-body").unbind("scroll");
-            $("#editatu_hizlaria .modal-body").scroll(function() {
-                
-                // Modalaren barruko scrolla hastean kolore-hautatzailea ezkutatu.
-                document.getElementById("editatu_hizlaria_kolorea").color.hidePicker();
-                
-            })
-            
-        });
-        
-        $(document).on("click", "#gehitu_hizlaria_botoia", function(event) {
-            var id_hizlaria = 0;
-            
-            // 0ak id berria behar duela adierazten du
-            $("#editatu_hizlaria_id").val(id_hizlaria);
-            
-            // Eztabaidaren id-a gordeko dugu ezkutuko input batean.
-            $("#editatu_hizlaria_id_ikus_entzunezkoa").val($("#hidden_edit_id").val());
-            
-            // Leiho modalaren izenburuan Gehitu hizlaria jarri.
-            $("#editatu_hizlaria_izenburua_etiketa").text("Gehitu hizlaria");
-            
-            // Irudiaren inputa garbitu
-            $("#editatu_hizlaria_grafismoa_irudia").val("");
-            
-            // Aurretik egon daitezkeen Ikusi eta Ezabatu estekak kendu (eta tarteko | ere bai)
-            $("#editatu_hizlaria_grafismoa_irudia_ikusi").remove();
-            $('#editatu_hizlaria_grafismoa_irudia_banatzailea').remove();
-            $("#editatu_hizlaria_grafismoa_irudia_ezabatu").remove();
-            
-            // Hizkuntza kopuruaren arabera beharrezko fieldset-ak sortu.
-            $.ajax({
-                
-                type: "GET",
-                dataType: "json",
-                url: "<?php echo URL_BASE; ?>API/v1/hizkuntzak/"
-                
-            }).done(function(data, textStatus, jqXHR) {
-                
-                console && console.log(data);
-                
-                // Testuen fieldseta garbitu.
-                $("#editatu_hizlaria_fieldset_edukinontzia").empty();
-                
-                for (var i = 0; i < data["hizkuntzak"].length; i++) {
-                    
-                    $("#editatu_hizlaria_fieldset_edukinontzia").append("<fieldset data-h_id='" + data["hizkuntzak"][i].id + "' id='editatu_hizlaria_fieldset_" + i + "'>" +
-                            "<legend><strong>Testuak: " + data["hizkuntzak"][i].izena + "</strong></legend>" +
-                            "<div class='control-group'>" +
-                                "<label for='editatu_hizlaria_izena_" + data["hizkuntzak"][i].id + "'>Izena:</label>" +
-                                "<input class='input-xlarge editatu_hizlaria_izena' type='text' id='editatu_hizlaria_izena_" + data["hizkuntzak"][i].id + "' data-h_id='" + data["hizkuntzak"][i].id + "' name='editatu_hizlaria_izena_" + data["hizkuntzak"][i].id + "' value='' />" +
-                            "</div>" +
-                            "<div class='control-group'>" +
-								"<label for='editatu_hizlaria_aurrizkia_" + data["hizkuntzak"][i].id + "'>Aurrizkia:</label>" +
-								"<input class='input-xlarge editatu_hizlaria_aurrizkia' type='text' id='editatu_hizlaria_aurrizkia_" + data["hizkuntzak"][i].id + "' data-h_id='" + data["hizkuntzak"][i].id + "' name='editatu_hizlaria_aurrizkia_" + data["hizkuntzak"][i].id + "' value='' />" +
-							"</div>" +
-                        "</fieldset>"
-                    );
-                }
-                
-                // Propietate orokorrak (hizkuntzei lotuak ez daudenak) berrezarri.
-                $("#editatu_hizlaria_bilagarria").prop("checked", false);
-                $("#editatu_hizlaria_kolorea").val("FFFFFF");
-                $("#editatu_hizlaria_kolorea").css("background-color", "#FFFFFF");
-                
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                
-                console.log("Errore bat gertatu da zerbitzaritik bideoaren datuak eskuratzean.");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                
-            });
-            
-        });
-        
-        $(document).on("click", ".editatu_hizlaria_botoia", function(event) {
-            
-            // editatu_hizlaria_botoia edo bere barruko <i>-a izan daitezke klikatutakoak. Biei gehitu diet data-id-hizlaria atributua.
-            var id_hizlaria = $(event.target).attr("data-id-hizlaria");
-            
-            // id-a gorde gero datuak gorde behar badira ere.
-            $("#editatu_hizlaria_id").val(id_hizlaria);
-            
-            // Leiho modalaren izenburuan Editatu hizlaria jarri.
-            $("#editatu_hizlaria_izenburua_etiketa").text("Editatu hizlaria");
-            
-            // Irudiaren inputa garbitu
-            $("#editatu_hizlaria_grafismoa_irudia").val("");
-            
-            // Aurretik egon daitezkeen Ikusi eta Ezabatu estekak kendu (eta tarteko | ere bai)
-            $("#editatu_hizlaria_grafismoa_irudia_ikusi").remove();
-            $('#editatu_hizlaria_grafismoa_irudia_banatzailea').remove();
-            $("#editatu_hizlaria_grafismoa_irudia_ezabatu").remove();
-            
-            // Testuen fieldseta garbitu
-            $("#editatu_hizlaria_fieldset_edukinontzia").empty();
-            
-            // Hizkuntza kopuruaren arabera beharrezko fieldset-ak sortu.
-            $.ajax({
-                
-                type: "GET",
-                dataType: "json",
-                url: "<?php echo URL_BASE; ?>API/v1/hizlariak/" + id_hizlaria
-                
-            }).done(function(data, textStatus, jqXHR) {
-                
-                console && console.log(data);
-                console.log(data["hizkuntzak"].length);
-                
-                for (var i = 0; i < data["hizkuntzak"].length; i++) {
-                    
-                    $("#editatu_hizlaria_fieldset_edukinontzia").append("<fieldset data-h_id='" + data["hizkuntzak"][i].h_id + "' id='editatu_hizlaria_fieldset_" + i + "'>" +
-                            "<legend><strong>Testuak: " + data["hizkuntzak"][i].hizkuntza + "</strong></legend>" +
-                            "<div class='control-group'>" +
-                                "<label for='editatu_hizlaria_izena_" + data["hizkuntzak"][i].h_id + "'>Izena:</label>" +
-                                "<input class='input-xlarge editatu_hizlaria_izena' type='text' id='editatu_hizlaria_izena_" + data["hizkuntzak"][i].h_id + "' data-h_id='" + data["hizkuntzak"][i].h_id + "' name='editatu_hizlaria_izena_" + data["hizkuntzak"][i].h_id + "' value='" + data["hizkuntzak"][i].izena + "' />" +
-                            "</div>" +
-                            "<div class='control-group'>" +
-								"<label for='editatu_hizlaria_aurrizkia_" + data["hizkuntzak"][i].h_id + "'>Aurrizkia:</label>" +
-								"<input class='input-xlarge editatu_hizlaria_aurrizkia' type='text' id='editatu_hizlaria_aurrizkia_" + data["hizkuntzak"][i].h_id + "' data-h_id='" + data["hizkuntzak"][i].h_id + "' name='editatu_hizlaria_aurrizkia_" + data["hizkuntzak"][i].h_id + "' value='" + data["hizkuntzak"][i].aurrizkia + "' />" +
-							"</div>" +
-                        "</fieldset>"
-                    );
-                }
-                
-                $("#editatu_hizlaria_kolorea").val(data["kolorea"]);
-                
-                // Hizlariak kolorerik badu kolore hori ezarri,
-                // bestela zuriz margotu.
-                if (data["kolorea"]) {
-                    $("#editatu_hizlaria_kolorea").css("background-color", "#" + data["kolorea"]);
-                } else {
-                    $("#editatu_hizlaria_kolorea").css("background-color", "#FFFFFF");
-                }
-                
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                
-                console.log("Errore bat gertatu da zerbitzaritik bideoaren datuak eskuratzean.");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                
-            });
-            
-        });
-        
-        $("#editatu_hizlaria_gorde_botoia").click(function() {
-            
-            var datuak = {};
-            
-            // Ezkutuko elementu batean gorde dugun id berreskuratu
-			var id_hizlaria = $("#editatu_hizlaria_id").val();
-			var hizlari_kop = $("#hizlariak_taula tr").length;
-			
-			// hizlariak_taula-ri gehitu diogun katea.
-			var katea = "";
-            
-            datuak["id_ikus_entzunezkoa"] = $("#editatu_hizlaria_id_ikus_entzunezkoa").val();
-            datuak["id_hizlaria"] = id_hizlaria;
-            datuak["kolorea"] = $("#editatu_hizlaria_kolorea").val();
-            
-            $("#editatu_hizlaria_fieldset_edukinontzia fieldset").each(function(index, element) {
-                
-                var h_id = $(element).attr("data-h_id");
-                
-                datuak["izena_" + h_id] = $("#editatu_hizlaria_izena_" + h_id).val();
-                datuak["aurrizkia_" + h_id] = $("#editatu_hizlaria_aurrizkia_" + h_id).val();
-                
-            });
-            
-            console.log(datuak);
-            
-            $.ajax({
-                
-                type: "POST",
-                url: "<?php echo URL_BASE; ?>API/v1/hizlariak/",
-                dataType: "JSON",
-                data: datuak
-                
-            }).done(function(data, textStatus, jqXHR) {
-                
-                if (id_hizlaria !== "0") {
-                    
-					// Existitzen den hizlari bat editatzen ari gara eta
-					// bere izena eguneratu behar dugu zerrendan.
-					$("#hizlaria_izena_" + id_hizlaria).html($("#editatu_hizlaria_izena_<?php echo $hizkuntza["id"]; ?>").val());
-                    
-				} else {
-                    
-					// Aurretik dauden hizlari guztiei ordena posible berri bat gehitu behar zaie
-					$("#hizlariak_taula tr td select").each(function() {
-						$(this).append("<option>" + hizlari_kop + "</option>");
-					});
-					
-					katea = "<tr>" +
-								"<td>" +
-									"<select class='input-mini' name='orden_" + data["id_hizlari_berria"] + "' onchange='javascript:document.location=\"<?php echo $url_base . "form" . $url_param; ?>&edit_id=<? echo $edit_id; ?>&oid_hizlaria=" + data["id_hizlari_berria"] + "&bal=\" + this.options[this.selectedIndex].value;'>";
-					
-					// Ordena posibleak: 0 eta lehendik dauden hizlari kopurua + 1 arteko guztiak.
-					for (var i = 0; i <= hizlari_kop; i++) {
-						katea = katea + "<option value='" + i + "'>" + i + "</option>";
-					}
-					
-					katea = katea + "</select>" +
-								"</td>" +
-								"<td id='hizlaria_izena_" + data["id_hizlari_berria"] + "' class='td_klik'>" + $("#editatu_hizlaria_izena_<?php echo $hizkuntza["id"]; ?>").val() + "</td>" +
-								"<td class='td_aukerak'>" +
-								   "<a href='#editatu_hizlaria' data-id-hizlaria='" + data["id_hizlari_berria"] + "' role='button' class='btn editatu_hizlaria_botoia' data-toggle='modal'><i class='icon-pencil' data-id-hizlaria='" + data["id_hizlari_berria"] + "'></i></a>&nbsp;" +
-								   "<a class='btn' data-toggle='tooltip' title='ezabatu' href='<?php echo $url_base . 'form' .  $url_param . '&edit_id=' . $edit_id; ?>&ezab_hizlaria_id=" + data["id_hizlari_berria"] + "' onclick='javascript: return(confirm(\"Seguru hizlaria ezabatu nahi duzula?\"));'><i class='icon-trash'></i></a>" +
-								"</td>" +
-							 "</tr>";
-					
-					// Hizlari berri bat sortu dugu eta
-					// zerrendara gehitu behar dugu.
-					$("#hizlariak_taula").append(katea);
-				}
-				
-                // Ikus-entzunezko berri bat sortu badugu.
-                if (data.id_ikus_entzunezko_berria && data.id_ikus_entzunezko_berria > 0) {
-                    
-                    // Ezkutuko input-ean jarri id-a, gordetzean dagokion balioa erabiltzeko.
-                    $("#hidden_edit_id").val(data.id_ikus_entzunezko_berria);
-                    
-                    // Hizlariak editatzeko ezkutuko input-ean ere jarri id-a.
-                    $("#editatu_hizlaria_id_ikus_entzunezkoa").val(data.id_ikus_entzunezko_berria);
-                    
-                }
-                
-				$("#editatu_hizlaria").modal('hide');
-                
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                
-                console.log("Errore bat gertatu da zerbitzaritik bideoaren datuak eskuratzean.");
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-                
-            });
-        });
 	});
 </script>
 
@@ -303,44 +51,22 @@
         <input type="hidden" name="gorde" value="BAI" />
         <input id="hidden_edit_id" type="hidden" name="edit_id" value="<?php echo $edit_id; ?>" />
         
-	
-	<?php
-            foreach (hizkuntza_idak() as $h_id) {
-        ?>
         <fieldset>
             
             <legend><strong>Informazio orokorra</strong></legend>
             
             <div class="control-group">
-                <label for="izenburua_<?php echo $h_id; ?>">Izenburua:</label>
-                <input class="input-xxlarge" type="text" id="izenburua_<?php echo $h_id; ?>" name="izenburua_<?php echo $h_id; ?>" value="<?php echo testu_formatua_input($ikus_entzunezkoa->hizkuntzak[$h_id]->izenburua); ?>" />
+                <label for="izenburua_<?php echo $hizkuntza["id"]; ?>">Izenburua:</label>
+                <input class="input-xxlarge" type="text" id="izenburua_<?php echo $hizkuntza["id"]; ?>" name="izenburua_<?php echo $hizkuntza["id"]; ?>" value="<?php echo testu_formatua_input($ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->izenburua); ?>" />
             </div>
             
             <div class="control-group">
-                <label for="etiketak_<?php echo $h_id; ?>">Etiketak:</label>
-                <input id="etiketak_<?php echo $h_id; ?>" name="etiketak_<?php echo $h_id; ?>" autocomplete="off" type="text" placeholder="Etiketak" class="tm-input input-xxlarge" />
-            </div>
-            
-            <div class="control-group">
-                <label for="azpitituluak_<?php echo $h_id; ?>">SRT azpitituluak:</label>
-                <?php if (!is_file($_SERVER['DOCUMENT_ROOT'] . $ikus_entzunezkoa->hizkuntzak[$h_id]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$h_id]->azpitituluak)) { echo "<div class='alert'>OHARRA: Hipertranskribapena sortu ahal izateko SRT azpititulu bat gehitu eta gorde botoia sakatu behar duzu lehenik.</div>"; } ?>
-                <input class="input-xxlarge" name="azpitituluak_<?php echo $h_id; ?>" type="file" id="azpitituluak_<?php echo $h_id; ?>" />
-                <?php
-                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $ikus_entzunezkoa->hizkuntzak[$h_id]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$h_id]->azpitituluak)) {
-                        echo "<a href='" . URL_BASE . $ikus_entzunezkoa->hizkuntzak[$h_id]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$h_id]->azpitituluak . "' target='_blank'>Ikusi</a>";
-                        echo "&nbsp;|&nbsp;<a href=\"" . $url_base . "form" . $url_param . "&edit_id=" . $edit_id . "&h_id=" . $h_id . "&ezabatu=AZPITITULUA\" onClick=\"javascript: return (confirm ('Azpitituluak ezabatzea aukeratu duzu. Ziur al zaude?'));\">Ezabatu</a>";
-                    }
-                ?>
-                <button id="editatu-hipertranskribapena-botoia" type="button" class="btn"<?php if (!is_file ($_SERVER['DOCUMENT_ROOT'] . $ikus_entzunezkoa->hizkuntzak[$h_id]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$h_id]->azpitituluak)) {echo " disabled";} ?>>Editatu hipertranskribapena</button>
+                <label for="etiketak_<?php echo $hizkuntza["id"]; ?>">Etiketak:</label>
+                <input id="etiketak_<?php echo $hizkuntza["id"]; ?>" name="etiketak_<?php echo $hizkuntza["id"]; ?>" autocomplete="off" type="text" placeholder="Etiketak" class="tm-input input-xxlarge" />
             </div>
             
         </fieldset>
-        <?php
-            }
-        ?>
-	
-	
-	<?php if($edit_id != 0){ // fitxa berria bada, fitxategia igotzeko eta hizlariak aukera kendu?>
+        
         <fieldset>
             
             <?php if ($mezua != "") { ?>
@@ -352,108 +78,79 @@
                 
             <?php } ?>
             
-	    
+            
             <legend><strong>Ikus-entzunezkoa</strong></legend>
             
-            <div class="control-group">
-                <label for="ikus_entzunezkoa_jatorrizkoa">Jatorrizko ikus-entzunezkoa:</label>
-                
-                <?php
-		if ($ikus_entzunezkoa->mota == "audioa") {
-            $path = $ikus_entzunezkoa->audio_path;
-			$jatorrizkoa = $ikus_entzunezkoa->audio_jatorrizkoa;
-        } else if ($ikus_entzunezkoa->mota == "bideoa") {
-			$path = $ikus_entzunezkoa->bideo_path;
-			$jatorrizkoa = $ikus_entzunezkoa->bideo_jatorrizkoa;
-		}
-		?>
-                <?php
-                        if (is_file($_SERVER['DOCUMENT_ROOT'] . $path . $jatorrizkoa)) {
-                            echo "<a id='ikus-entzunezkoa-jatorrizkoa-ikusi' href='" . URL_BASE . $path . $jatorrizkoa . "' target='_blank'>Ikusi</a>";
-                            echo "&nbsp;|&nbsp;<a href=\"" . $url_base . "form" . $url_param . "&edit_id=" . $edit_id . "&h_id=" . $h_id . "&ezabatu=".strtoupper($ikus_entzunezkoa->mota)."\" onClick=\"javascript: return (confirm ('Ziur zaude fitxategia ezabatu nahi duzula?'));\">Ezabatu</a>";
-                        }
-                ?>    
-                
-		
-		
-                <div class='alert'>OHARRA: Gehitu ikus-entzunezkoa eta gorde botoia sakatu behar duzu. Gehienez 100 MB.</div>
-		<?php //<input class="input-xxlarge" name="ikus_entzunezkoa_jatorrizkoa" type="file" id="ikus_entzunezkoa_jatorrizkoa" /> ?>
-                <span class="btn fileinput-button">
-			<i class="glyphicon glyphicon-plus"></i>
-			<span>Fitxategia aukeratu</span>
-			<!-- The file input field used as target for the file upload widget -->
-			<input id="fileupload" type="file" name="files[]" multiple>
-		       
-		    </span>
-		    <br>
-		    <br>
-		    <!-- The global progress bar -->
-		    <div id="progress" class="progress">
-			<div class="bar bar-success"></div>
-		    </div>
-		    <!-- The container for the uploaded files -->
-		    <div id="files" class="files"></div>
-		  
-               
-            </div>
+            <?php if($edit_id != 0){ // fitxa berria bada, fitxategia igotzeko aukera kendu?>
             
+                <div class="control-group">
+                    <label for="ikus_entzunezkoa_jatorrizkoa">Jatorrizko ikus-entzunezkoa:</label>
+                    
+                    <?php
+                    if ($ikus_entzunezkoa->mota == "audioa") {
+                        $path = $ikus_entzunezkoa->audio_path;
+                        $jatorrizkoa = $ikus_entzunezkoa->audio_jatorrizkoa;
+                    } else if ($ikus_entzunezkoa->mota == "bideoa") {
+                        $path = $ikus_entzunezkoa->bideo_path;
+                        $jatorrizkoa = $ikus_entzunezkoa->bideo_jatorrizkoa;
+                    }
+                    
+                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $path . $jatorrizkoa)) {
+                        echo "<a id='ikus-entzunezkoa-jatorrizkoa-ikusi' href='" . URL_BASE . $path . $jatorrizkoa . "' target='_blank'>Ikusi</a>";
+                        echo "&nbsp;|&nbsp;<a href=\"" . $url_base . "form" . $url_param . "&edit_id=" . $edit_id . "&h_id=" . $hizkuntza["id"] . "&ezabatu=".strtoupper($ikus_entzunezkoa->mota)."\" onClick=\"javascript: return (confirm ('Ziur zaude fitxategia ezabatu nahi duzula?'));\">Ezabatu</a>";
+                    }
+                    ?>
+                    
+                    <div class='alert'>OHARRA: Ikus-entzunezkoa gehitu eta gorde botoia sakatu behar duzu. Gehienez 100 MB.</div>
+                    <?php //<input class="input-xxlarge" name="ikus_entzunezkoa_jatorrizkoa" type="file" id="ikus_entzunezkoa_jatorrizkoa" /> ?>
+                    <span class="btn fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Aukeratu fitxategia</span>
+                        <!-- The file input field used as target for the file upload widget -->
+                        <input id="fileupload" type="file" name="files[]" multiple>
+                    </span>
+                    <br>
+                    <br>
+                    <!-- The global progress bar -->
+                    <div id="progress" class="progress">
+                        <div class="bar bar-success"></div>
+                    </div>
+                    <!-- The container for the uploaded files -->
+                    <div id="files" class="files"></div>
+                   
+                </div>
+                
+            <?php } else { ?>
+                <div class='alert'>OHARRA: Lehendabizi Ikus-entzunezkoaren datuak sartu eta gorde behar dituzu ikus-entzunezkoa gehitu ahal izateko.</div>
+            <?php } ?>
         </fieldset>
         
         <?php  if (is_file($_SERVER['DOCUMENT_ROOT'] . $path . $jatorrizkoa)) {?>
+		<fieldset>
+			<legend><strong>Eskuz sortutako azpitituluak</strong></legend>
+			<div class='alert'>OHARRA: Hipertranskribapena sortzeko SRT azpititulu-fitxategi bat erabili nahi baduzu hautatu aukera hau.</div>
+			<div class="control-group">
+                <label for="azpitituluak_<?php echo $hizkuntza["id"]; ?>">SRT azpitituluak:</label>
+                <?php if (!is_file($_SERVER['DOCUMENT_ROOT'] . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->azpitituluak)) { echo "<div class='alert'>OHARRA: Hipertranskribapena sortu ahal izateko SRT azpititulu bat gehitu eta gorde botoia sakatu behar duzu lehenik.</div>"; } ?>
+                <input class="input-xxlarge" name="azpitituluak_<?php echo $hizkuntza["id"]; ?>" type="file" id="azpitituluak_<?php echo $hizkuntza["id"]; ?>" />
+                <?php
+                    if (is_file($_SERVER['DOCUMENT_ROOT'] . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->azpitituluak)) {
+                        echo "<a href='" . URL_BASE . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->azpitituluak . "' target='_blank'>Ikusi</a>";
+                        echo "&nbsp;|&nbsp;<a href=\"" . $url_base . "form" . $url_param . "&edit_id=" . $edit_id . "&h_id=" . $hizkuntza["id"] . "&ezabatu=AZPITITULUA\" onClick=\"javascript: return (confirm ('Azpitituluak ezabatzea aukeratu duzu. Ziur al zaude?'));\">Ezabatu</a>";
+                    }
+                ?>
+                <button id="editatu-hipertranskribapena-botoia" type="button" class="btn"<?php if (!is_file ($_SERVER['DOCUMENT_ROOT'] . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->path_azpitituluak . $ikus_entzunezkoa->hizkuntzak[$hizkuntza["id"]]->azpitituluak)) {echo " disabled";} ?>>Editatu hipertranskribapena</button>
+            </div>
+		</fieldset>
+		
         <fieldset>
             <legend><strong>Azpititulu automatikoak</strong></legend>
+            <div class='alert'>OHARRA: Hipertranskribapena sortzeko transkribapenetik automatikoki sortutako azpitituluak erabili nahi badituzu hautatu aukera hau.</div>
+            <a class="btn" href="<?php echo $url_base?>azpitituluak?edit_id=<?=$edit_id?>">Sortu azpitituluak eta editatu hipertranskribapena</a>
             
-            <a class="btn" href="<?php echo $url_base?>azpitituluak?edit_id=<?=$edit_id?>">Azpitituluak sortu</a>
             
-		    
-		</fieldset>
-        <?php } ?>    
-       
-        <fieldset>
-            
-			<legend><strong>Hizlariak</strong></legend>
-			
-			<table id="hizlariak_taula" class="table table-bordered table-hover">
-				
-                <thead>
-					<tr>
-						<th width="50">Ordena</th>
-						<th>Izena</th>
-						<th width="85">
-							<a id="gehitu_hizlaria_botoia" class="btn" href="#editatu_hizlaria" data-toggle="modal">Gehitu&nbsp;<i class="icon-plus-sign"></i></a>
-						</th>
-					</tr>
-				</thead>
-				
-                <tbody>
-					<?php
-						$orden_max = orden_max("ikus_entzunezkoak_hizlariak", "fk_elem = " . $edit_id);
-						
-						foreach ($ikus_entzunezkoa->hizlariak as $elem) {
-					?>
-					<tr <?php if ($klassak) { echo current($klassak); } ?>>
-						<td>
-							<select class="input-mini" name="orden_<?php echo $elem->id; ?>" onchange="javascript:document.location='<?php echo $url_base . "form" . $url_param; ?>&edit_id=<? echo $edit_id; ?>&oid_hizlaria=<?php echo $elem->id; ?>&bal=' + this.options[this.selectedIndex].value;">
-								<option value="0">0</option>
-							<?php for ($i = 1; $i <= ($elem->orden == 0 ? $orden_max + 1 : $orden_max); $i++){ ?>
-								<option value="<?php echo $i; ?>"<?php echo $i == $elem->orden ? " selected" : ""; ?>><?php echo $i; ?></option>
-							<?php } ?>
-							</select>
-						</td>
-						<td id="hizlaria_izena_<?php echo $elem->id; ?>" class="td_klik"><?php echo $elem->hizkuntzak[$hizkuntza["id"]]->izena; ?></td>
-						<td class="td_aukerak">
-							<a href="#editatu_hizlaria" data-id-hizlaria="<?php echo $elem->id; ?>" role="button" class="btn editatu_hizlaria_botoia" data-toggle="modal"><i class="icon-pencil" data-id-hizlaria="<?php echo $elem->id; ?>"></i></a>
-							<a class="btn" data-toggle="tooltip" title="ezabatu" href="<?php echo $url_base . "form" .  $url_param . "&edit_id=" . $edit_id; ?>&ezab_hizlaria_id=<?php echo $elem->id; ?>" onclick="javascript: return (confirm ('Seguru hizlaria ezabatu nahi duzula?'));"><i class="icon-trash"></i></a>
-						</td>
-					</tr>
-					<?php if ($klassak && !next($klassak)) { reset($klassak); } } ?>
-				</tbody>
-                
-			</table>
-		
         </fieldset>
-        <?php } // endif fitxa berria bada?>
-        
+        <?php } ?>
         
         <div class="control-group text-center">
             <button type="submit" class="btn"><i class="icon-edit"></i>&nbsp;Gorde</button>
@@ -461,35 +158,6 @@
         </div>
     </form>
 </div>
-
-<div id="editatu_hizlaria" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="editatu_hizlaria_izenburua_etiketa" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="editatu_hizlaria_izenburua_etiketa"></h3>
-        </div>
-        
-        <div class="modal-body">
-            <fieldset>
-                <input type="hidden" name="gorde" value="BAI" />
-                <input type="hidden" id="editatu_hizlaria_id" name="editatu_hizlaria_id" value="" />
-                <input type="hidden" id="editatu_hizlaria_id_ikus_entzunezkoa" name="editatu_hizlaria_id_ikus_entzunezkoa" value="" />
-                
-                <span id="editatu_hizlaria_fieldset_edukinontzia"></span>
-                
-                <div class="control-group">
-                    <label for="editatu_hizlaria_kolorea">Kolorea:</label>
-                    <input class="color" id="editatu_hizlaria_kolorea" name="editatu_hizlaria_kolorea" />
-                </div>
-            </fieldset>
-        </div>
-        
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Itxi</button>
-            <button id="editatu_hizlaria_gorde_botoia" class="btn btn-primary" type="submit">Gorde</button>
-        </div>
-    </div>
-</div>
-
 
 <?php // MODAL ezagutza_txt?>
 <div id="ezagutza_txt_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ezagutza_txt_izenburua_etiketa" aria-hidden="true">
@@ -643,12 +311,12 @@ $(function () {
             .prop('disabled', true)
             .text('Processing...')
             .on('click', function (event) {
-		event.preventDefault();
+                event.preventDefault();
                 var $this = $(this),
                     data = $this.data();
                 $this
                     .off('click')
-                    .text('Abort')
+                    .text('Utzi')
                     .on('click', function () {
                         $this.remove();
                         data.abort();
@@ -659,13 +327,16 @@ $(function () {
             });
     $('#fileupload').fileupload({
         url: url,
-	formData: [{name: 'edit_id', value: $("#hidden_edit_id").val() } ],
-	dataType: 'json',
-	autoUpload: false,
-        acceptFileTypes: /(\.|\/)(mpe?g|webm|avi|mp4|mp3|ogg)$/i,
+        formData: [{name: 'edit_id', value: $("#hidden_edit_id").val() } ],
+        dataType: 'json',
+        autoUpload: false,
+        acceptFileTypes: /(\.|\/)(webm|mp4|mp3|ogg)$/i,
         limitMultiFileUploads: 1,
         disableVideoPreview: true,
-        disableAudioPreview: true
+        disableAudioPreview: true,
+        messages: {
+            acceptFileTypes: 'Fitxategi-mota baliogabea. Onartutako fitxategi-motak: mp4, webm, mp3 edo ogg.'
+        }
     }).on('fileuploadadd', function (e, data) {
         data.context = $('<div/>').appendTo('#files');
         $.each(data.files, function (index, file) {
@@ -694,7 +365,7 @@ $(function () {
         }
         if (index + 1 === data.files.length) {
             data.context.find('button')
-                .text('Fitxategia igo')
+                .text('Igo fitxategia')
                 .prop('disabled', !!data.files.error);
         }
     }).on('fileuploadprogressall', function (e, data) {
@@ -715,7 +386,7 @@ $(function () {
                 var botoia = $('<button>')
                     .attr('class', 'btn-default azpitituluak_sortu_btn')
                     .attr('file_url', file.url)
-                    .html('Azpitituluak sortu');
+                    .html('Sortu azpitituluak');
 
                 var lotura = $(data.context.children()[index])
                     .wrap(link);
@@ -732,7 +403,7 @@ $(function () {
         });
     }).on('fileuploadfail', function (e, data) {
         $.each(data.files, function (index) {
-            var error = $('<span class="text-danger"/>').text('Ezin izan da fitxategia igo.' + data.textStatus);
+            var error = $('<span class="text-danger"/>').text('Ezin izan da fitxategia igo: ' + data.textStatus);
             $(data.context.children()[index])
                 .append('<br>')
                 .append(error);

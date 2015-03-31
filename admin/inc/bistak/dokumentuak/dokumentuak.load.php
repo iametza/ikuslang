@@ -23,32 +23,41 @@
             
             if ($ezab_id > 0) {
                 
-                // Fitxategia ezabatuko dugu.
-                $path_dokumentua = fitxategia_path("dokumentuak", "path_dokumentua", $ezab_id);
-                fitxategia_ezabatu("dokumentuak", "dokumentua", $ezab_id, "../" . $path_dokumentua);
-                
-                // Dokumentuaren DBko datuak ezabatuko ditugu.
-                // Lehenik bere hizkuntza desberdinetako datuak.
-                $sql = "DELETE
-                        FROM dokumentuak_hizkuntzak
-                        WHERE fk_elem = $ezab_id";
-                
-                $dbo->query($sql) or die($dbo->ShowError());
-                
-                // Ondoren bere datuak.
-                $sql = "DELETE
-                        FROM dokumentuak
-                        WHERE id = $ezab_id";
-                
-                $dbo->query($sql) or die($dbo->ShowError());
-                
-                // Bere etiketak ere ezabatu (ez etiketak berak).
-                $sql = "DELETE
-                        FROM dokumentuak_etiketak
+                $sql = "SELECT fk_ariketa
+                        FROM ariketa_dokumentua
                         WHERE fk_dokumentua = $ezab_id";
                 
                 $dbo->query($sql) or die($dbo->ShowError());
                 
+                // Dokumentua ez bada ariketetan erabiltzen.
+                if ($dbo->emaitza_kopurua() == 0) {
+                    
+                    // Fitxategia ezabatuko dugu.
+                    $path_dokumentua = fitxategia_path("dokumentuak", "path_dokumentua", $ezab_id);
+                    fitxategia_ezabatu("dokumentuak", "dokumentua", $ezab_id, "../" . $path_dokumentua);
+                    
+                    // Dokumentuaren DBko datuak ezabatuko ditugu.
+                    // Lehenik bere hizkuntza desberdinetako datuak.
+                    $sql = "DELETE
+                            FROM dokumentuak_hizkuntzak
+                            WHERE fk_elem = $ezab_id";
+                    
+                    $dbo->query($sql) or die($dbo->ShowError());
+                    
+                    // Ondoren bere datuak.
+                    $sql = "DELETE
+                            FROM dokumentuak
+                            WHERE id = $ezab_id";
+                    
+                    $dbo->query($sql) or die($dbo->ShowError());
+                    
+                    // Bere etiketak ere ezabatu (ez etiketak berak).
+                    $sql = "DELETE
+                            FROM dokumentuak_etiketak
+                            WHERE fk_dokumentua = $ezab_id";
+                    
+                    $dbo->query($sql) or die($dbo->ShowError());
+                }
             }
         }
         
@@ -191,7 +200,7 @@
         
     } else {
         
-        $sql = "SELECT A.id, A.path_dokumentua, A.dokumentua, B.izenburua
+        $sql = "SELECT A.id, A.path_dokumentua, A.dokumentua, B.izenburua, (SELECT COUNT(*) FROM ariketa_dokumentua WHERE fk_dokumentua= A.id) AS erabilpenak
                 FROM dokumentuak AS A
                 INNER JOIN dokumentuak_hizkuntzak AS B
                 ON A.id = B.fk_elem

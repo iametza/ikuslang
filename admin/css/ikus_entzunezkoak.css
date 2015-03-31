@@ -1,4 +1,9 @@
+#audioa-aurrebista .modal-body, #bideoa-aurrebista .modal-body {
+    text-align: center;
+}
+
 #bideoa-aurrebista-erreproduktorea {
+    max-width: 360px;
     width: 100%;
 }
 

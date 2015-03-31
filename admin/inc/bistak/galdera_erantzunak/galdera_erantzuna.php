@@ -1,22 +1,4 @@
-<script type="text/javascript">
-	function verif(){
-		var patroi_hutsik = /^\s*$/;
-
-		return (confirm ("Ariketa gorde nahi duzu?"));
-	}
-    
-    $(document).ready(function() {
-        
-        // Ariketa honi dagozkion etiketak zerbitzaritik eskuratu eta bistaratuko ditugu tagsManager erabiliz
-        // eta typeahead hasieratuko dugu.
-        $(".tm-input").etiketatu({
-            bidea: '<?php echo URL_BASE; ?>API/v1/etiketak',
-            id: '<?php echo $edit_id; ?>',
-            mota: 'ariketa'
-        });
-        
-    });
-</script>
+<link type="text/css" href="<?php echo URL_BASE_ADMIN; ?>css/ikus_entzunezkoak.css" rel="stylesheet" />
 
 <div class="navbar">
 	<div class="navbar-inner">
@@ -36,45 +18,71 @@
         <fieldset>
             <legend><strong>Ikus-entzunezkoa</strong></legend>
             
-            <!-- <div>IKUS-ENTZUNEZKOA HAUTATU ETA ALDATZEKO AUKERA EGON BEHAR LUKE HEMEN!!!!</div> -->
+            <div class="control-group">
+			    <label for="konbo-ikus-entzunezkoak">Aukeratu:</label>
+			    <select id="konbo-ikus-entzunezkoak" class="input-xxlarge" name="ikus-entzunezkoa">
+                    <?php if (!$galdera_erantzuna->ikus_entzunezkoa->id) { ?>
+                    <option disabled selected value="">HAUTATU IKUS-ENTZUNEZKOA</option>
+                    <?php } ?>
+					<?php foreach($ikus_entzunezkoak as $ikus_entzunezkoa){?>
+					<option <?php if($ikus_entzunezkoa['id'] == $galdera_erantzuna->ikus_entzunezkoa->id){?>selected="selected"<?php }?> value="<?=$ikus_entzunezkoa['id']?>" ><?php echo $ikus_entzunezkoa['izenburua'] . " [" . $ikus_entzunezkoa["mota"] . "]"; ?></option>
+					<?php }?>
+				</select>
+			   
+			</div>
             
-            <?php if ($galdera_erantzuna->ikus_entzunezkoa->mota == "bideoa") { ?>
             <div>
-                <video id="bideoa-aurrebista-erreproduktorea" controls>
-                    <source id="bideoa-aurrebista-erreproduktorea-mp4" src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->bideo_path . $galdera_erantzuna->ikus_entzunezkoa->bideo_mp4; ?>" type="video/mp4"></source>
-                    <source id="bideoa-aurrebista-erreproduktorea-webm"  src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->bideo_path . $galdera_erantzuna->ikus_entzunezkoa->bideo_webm; ?>" type="video/webm"></source>
-                </video>
+                
+                <div>
+                    <video id="bideoa-aurrebista-erreproduktorea" controls<?php if ($galdera_erantzuna->ikus_entzunezkoa->mota != "bideoa") { echo " style='display:none'";} ?>>
+                        <source id="bideoa-aurrebista-erreproduktorea-mp4" src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->bideo_path . $galdera_erantzuna->ikus_entzunezkoa->bideo_mp4; ?>" type="video/mp4"></source>
+                        <source id="bideoa-aurrebista-erreproduktorea-webm"  src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->bideo_path . $galdera_erantzuna->ikus_entzunezkoa->bideo_webm; ?>" type="video/webm"></source>
+                    </video>
+                </div>
+                
+                <div>
+                    <audio id="audioa-aurrebista-erreproduktorea" controls<?php if ($galdera_erantzuna->ikus_entzunezkoa->mota != "audioa") { echo " style='display:none'";} ?>>
+                        <source id="audioa-aurrebista-erreproduktorea-mp3" src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->audio_path . $galdera_erantzuna->ikus_entzunezkoa->audio_mp3; ?>" type="audio/mpeg"></source>
+                        <source id="audioa-aurrebista-erreproduktorea-ogg"  src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->audio_path . $galdera_erantzuna->ikus_entzunezkoa->audio_ogg; ?>" type="audio/ogg"></source>
+                    </audio>
+                </div>
+                
+                <div id="ikus-entzunezkorik-ez"<?php if ($galdera_erantzuna->ikus_entzunezkoa) { echo " style='display:none;'"; } ?>>Galdera-erantzun ariketa honek ez dauka ikus-entzunezkorik oraindik.</div>
+                
             </div>
-            <?php } else if ($galdera_erantzuna->ikus_entzunezkoa->mota == "audioa") { ?>
-            <div>
-                <audio id="audioa-aurrebista-erreproduktorea" controls>
-                    <source id="audioa-aurrebista-erreproduktorea-mp3" src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->audio_path . $galdera_erantzuna->ikus_entzunezkoa->audio_mp3; ?>" type="audio/mpeg"></source>
-                    <source id="audioa-aurrebista-erreproduktorea-ogg"  src="<?php echo URL_BASE . $galdera_erantzuna->ikus_entzunezkoa->audio_path . $galdera_erantzuna->ikus_entzunezkoa->audio_ogg; ?>" type="audio/ogg"></source>
-                </audio>
-            </div>
-            <? } else { ?>
-            <div>
-                <div>Galdera-erantzun ariketa honek ez dauka ikus-entzunezkorik oraindik.</div>
-            </div>
-            <?php } ?>
+            
         </fieldset>
         
         <fieldset>
             <legend><strong>Dokumentuak</strong></legend>
             
-            <!-- <div>DOKUMENTUAK HAUTATU ETA ALDATZEKO AUKERA EGON BEHAR LUKE HEMEN!!!!</div> -->
+            <div class="control-group">
+			    <select id="konbo-dokumentuak" class="input-xxlarge" name="dokumentuak[]" multiple="multiple">
+					<?php foreach($dokumentuak as $dokumentua){?>
+                        <option 
+                        <?php if ($galdera_erantzuna->dokumentuak) {
+                            foreach($galdera_erantzuna->dokumentuak as $ariketaren_dokumentua) { ?>
+                            <?php if($ariketaren_dokumentua->id == $dokumentua["id"]){?>selected="selected"<?php }?>
+                        <?php
+                            }
+                        }
+                        ?>
+                        value="<?=$dokumentua['id']?>" ><?php echo $dokumentua['izenburua']; ?></option>
+					<?php }?>
+				</select>
+			</div>
             
-            <?php if (count($galdera_erantzuna->dokumentuak) > 0) { ?>
-                
-                <?php foreach ($galdera_erantzuna->dokumentuak as $dokumentua) { ?>
-                <a href="<?php echo URL_BASE . $dokumentua->path_dokumentua . $dokumentua->dokumentua; ?>"><?php echo $dokumentua->izenburua; ?></a>
+            <div id="dokumentuak-zerrenda">
+                <?php if (count($galdera_erantzuna->dokumentuak) > 0) { ?>
+                    <?php foreach ($galdera_erantzuna->dokumentuak as $dokumentua) { ?>
+                    <div><a href="<?php echo URL_BASE . $dokumentua->path_dokumentua . $dokumentua->dokumentua; ?>"><?php echo $dokumentua->izenburua; ?></a></div>
+                    <?php } ?>
+                    
+                <? } else { ?>
+                    <div>Esaldiak zuzendu ariketa honek ez dauka dokumenturik oraindik.</div>
                 <?php } ?>
-                
-            <? } else { ?>
-            <div>
-                <div>Galdera-erantzun ariketa honek ez dauka dokumenturik oraindik.</div>
             </div>
-            <?php } ?>
+            
         </fieldset>
         
 		<?php
@@ -86,6 +94,11 @@
 			<div class="control-group">
 				<label for="izena_<?php echo $h_id; ?>">Izena:</label>
 				<input class="input-xxlarge" type="text" id="izena_<?php echo $h_id; ?>" name="izena_<?php echo $h_id; ?>" value="<?php echo testu_formatua_input ($galdera_erantzuna->hizkuntzak[$h_id]->izena); ?>" />
+			</div>
+            
+            <div class="control-group">
+				<label for="azalpena_<?php echo $h_id; ?>">Azalpena:</label>
+				<textarea class="input-xxlarge" id="azalpena_<?php echo $h_id; ?>" name="azalpena_<?php echo $h_id; ?>"><?php echo testu_formatua_input($galdera_erantzuna->hizkuntzak[$h_id]->azalpena); ?></textarea>
 			</div>
             
             <div class="control-group">
@@ -104,3 +117,111 @@
 		</div>
 	</form>
 </div>
+
+<script src="<?php echo URL_BASE; ?>js/chosen/chosen.jquery.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    
+	function verif() {
+		var patroi_hutsik = /^\s*$/;
+        
+		return (confirm ("Ariketa gorde nahi duzu?"));
+	}
+    
+    $(document).ready(function() {
+        
+        $("#konbo-dokumentuak").chosen({
+            placeholder_text_multiple : "Aukeratu dokumentua(k)...",
+            no_results_text : "Emaitzarik ez"
+        }).change(function() {
+            
+            // Dokumentuen zerrenda garbitu
+            $("#dokumentuak-zerrenda").empty();
+            
+            // Zerrendako elementu guztiak kargatu.
+            $("#konbo-dokumentuak option:selected").each(function() {
+                
+                $.ajax({
+                    
+                    type: "GET",
+                    dataType: "json",
+                    url: "<?php echo URL_BASE; ?>API/v1/dokumentuak/" + $(this).val()
+                    
+                }).done(function(data, textStatus, jqXHR) {
+                    
+                    $("#dokumentuak-zerrenda").append("<div><a href='<?php echo URL_BASE; ?>" + data.path_dokumentua + data.dokumentua + "'>" + data.izenburua + "</a></div>");
+                    
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    
+                    console.log("Errore bat gertatu da zerbitzaritik dokumentuen datuak eskuratzean.");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    
+                });
+            });
+        });
+        
+        $("#konbo-ikus-entzunezkoak").chosen().change(function() {
+            
+            $.ajax({
+                
+                type: "GET",
+                dataType: "json",
+                url: "<?php echo URL_BASE; ?>API/v1/ikus-entzunezkoak/" + $(this).val()
+                
+            }).done(function(data, textStatus, jqXHR) {
+                
+                if (data.mota === "audioa") {
+                    
+                    // Audioaren src-ak eguneratu.
+                    $("#audioa-aurrebista-erreproduktorea-mp3").attr('src', '<?php echo URL_BASE; ?>' + data.audio_path + data.audio_mp3);
+                    $("#audioa-aurrebista-erreproduktorea-ogg").attr('src', '<?php echo URL_BASE; ?>' + data.audio_path + data.audio_ogg);
+                    
+                    // Hau gabe src-ak aldatzen dira baina aurreko bideoa ikusten da.
+                    $("#audioa-aurrebista-erreproduktorea")[0].load();
+                    
+                    $("#audioa-aurrebista-erreproduktorea").show();
+                    $("#bideoa-aurrebista-erreproduktorea").hide();
+                    $("#ikus-entzunezkorik-ez").hide();
+                    
+                } else if (data.mota === "bideoa") {
+                    
+                    // Bideoaren src-ak eguneratu.
+                    $("#bideoa-aurrebista-erreproduktorea-mp4").attr('src', '<?php echo URL_BASE; ?>' + data.bideo_path + data.bideo_mp4);
+                    $("#bideoa-aurrebista-erreproduktorea-webm").attr('src', '<?php echo URL_BASE; ?>' + data.bideo_path + data.bideo_webm);
+                    
+                    // Hau gabe src-ak aldatzen dira baina aurreko bideoa ikusten da.
+                    $("#bideoa-aurrebista-erreproduktorea")[0].load();
+                    
+                    $("#audioa-aurrebista-erreproduktorea").hide();
+                    $("#bideoa-aurrebista-erreproduktorea").show();
+                    $("#ikus-entzunezkorik-ez").hide();
+                    
+                } else {
+                    
+                    console.log("Ikus-entzunezko mota ezezaguna!");
+                    
+                }
+                
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                
+                console.log("Errore bat gertatu da zerbitzaritik bideoaren datuak eskuratzean.");
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                
+            });
+            
+        });
+        
+        // Ariketa honi dagozkion etiketak zerbitzaritik eskuratu eta bistaratuko ditugu tagsManager erabiliz
+        // eta typeahead hasieratuko dugu.
+        $(".tm-input").etiketatu({
+            bidea: '<?php echo URL_BASE; ?>API/v1/etiketak',
+            id: '<?php echo $edit_id; ?>',
+            mota: 'ariketa'
+        });
+        
+    });
+</script>

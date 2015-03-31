@@ -12,7 +12,6 @@
 <table class="table table-bordered table-hover">
 	<thead>
 		<tr>
-			<th width="50">Ordena</th>
             <th width="100">Egoera</th>
 			<th>Izena</th>
 			<th width="130">&nbsp;</th>
@@ -20,18 +19,9 @@
 	</thead>
 	<tbody>
 		<?php
-            $orden_max = orden_max("ariketak", "fk_ariketa_mota = 2");
 			foreach ($elementuak as $elem) {
 		?>
 		<tr <?php echo current ($klassak); ?>>
-			<td>
-				<select class="input-mini" name="orden_<?php echo $elem["id"]; ?>" onchange="javascript:document.location='<?php echo $url_base . $url_param; ?>&oid=<?php echo $elem["id"]; ?>&bal=' + this.options[this.selectedIndex].value;">
-					<option value="0">0</option>
-				<?php for ($i=1; $i <= ($elem["orden"] == 0 ? $orden_max+1 : $orden_max); $i++){ ?>
-					<option value="<?php echo $i; ?>"<?php echo $i == $elem["orden"] ? " selected" : ""; ?>><?php echo $i; ?></option>
-				<?php } ?>
-				</select>
-			</td>
             <td>
                 <select class="input" name="egoera_<?php echo $elem["id"]; ?>" onchange="javascript:document.location='<?php echo $url_base . $url_param; ?>&aldatu_egoera_id=<?php echo $elem["id"]; ?>&bal=' + this.options[this.selectedIndex].value;">
                     <option value="0"<?php echo $elem["egoera"] == 0 ? " selected" : ""; ?>>Zirriborroa</option>

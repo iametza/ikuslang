@@ -816,9 +816,10 @@ class UploadHandler
          * 2. kokapen definitibora mugitu (audio/bideo) eta db-an erregistratu
         */
         
-         // Hauek dira sarrera bezala onartuko ditugun audio eta bideo-formatuak.
+        // Hauek dira sarrera bezala onartuko ditugun audio eta bideo-formatuak.
         // Kontutan izan gero dagokion formatuetara bihurtu beharko ditugula.
-        $bideo_formatuak = array("mpg", "mpeg", "mp4", "webm", "avi");
+        //$bideo_formatuak = array("mpg", "mpeg", "mp4", "webm", "avi");
+        $bideo_formatuak = array("mp4", "webm");
         $audio_formatuak = array("mp3", "ogg"); 
         foreach($files as $file){
         // 2. kokapen definitibora mugitu (audio/bideo) eta db-an erregistratu
@@ -827,7 +828,8 @@ class UploadHandler
             
             // Fitxategien luzapena erabiliko dut fitxategi-mota identifikatzeko.
             $luzapena = pathinfo($fitxategia, PATHINFO_EXTENSION);
-        
+            
+            $path_orig = $document_root . 'admin/js/jqueryfileupload/server/php/files/';
             
             // Fitxategia bideo edo audioa den jakin behar dugu.
             if (in_array($luzapena, $bideo_formatuak)) {
@@ -837,12 +839,18 @@ class UploadHandler
                 // GOGORATU: Jatorrizko bideoa zerbitzarira igo ondoren mp4 eta webm formatuetara bihurtu behar da
                 // eta bideoen izenak dagokien aldagaietan gorde.
                 // path_orig eta path_dest definitu behr dira
-                $path_orig = $document_root . 'admin/js/jqueryfileupload/server/php/files/';
                 $path_dest = $document_root . BIDEOEN_PATH;
                 
                 $bideo_jatorrizkoa = fitxategia_kopiatu ($fitxategia, $path_orig, $path_dest);
+                
                 $bideo_mp4 = "";
                 $bideo_webm = "";
+                
+                if ($luzapena == "mp4") {
+                    $bideo_mp4 = $bideo_jatorrizkoa;
+                } else if ($luzapena == "webm") {
+                    $bideo_webm = $bideo_jatorrizkoa;
+                }
                 
                 $edit_id = $_POST['edit_id'];
                 
@@ -886,22 +894,25 @@ class UploadHandler
                         $dbo->query($sql) or die($dbo->Show());
                         
                     }
+                    
                 }
                 
             } else if (in_array($luzapena, $audio_formatuak)) {
                 
                 $mota = "audioa";
                 
-                
                 // GOGORATU: Jatorrizko bideoa zerbitzarira igo ondoren mp4 eta webm formatuetara bihurtu behar da
                 // eta bideoen izenak dagokien aldagaietan gorde.
                 // path_orig eta path_dest definitu behr dira
-                $path_orig = $document_root . 'admin/js/jqueryfileupload/server/php/files/';
                 $path_dest = $document_root . AUDIOEN_PATH;
                 
-                $audio_jatorrizkoa = fitxategia_kopiatu ($fitxategia, $path_orig, $path_dest);
-                $audio_mp3 = "";
-                $audio_ogg = "";
+                $audio_jatorrizkoa = fitxategia_kopiatu($fitxategia, $path_orig, $path_dest);
+                
+                if ($luzapena == "mp3") {
+                    $audio_mp3 = $audio_jatorrizkoa;
+                } else if ($luzapena == "ogg") {
+                    $audio_ogg = $audio_jatorrizkoa;
+                }
                 
                 $edit_id = $_POST['edit_id'];                
                 
@@ -952,8 +963,11 @@ class UploadHandler
                 // Gehitutako fitxategia ez da onartutako bideo edo audio fitxategi-mota bat.
                 // Erabiltzaileari jakinarazi behar zaio.
                 $mezua = "Gehitutako fitxategia ez da onartutako bideo edo audio fitxategi-mota bat.";
-
+                
             }
+            
+            // Aldibaterako fitxategia ezabatu
+            unlink($path_orig . $fitxategia);
         }
         return $files;
 

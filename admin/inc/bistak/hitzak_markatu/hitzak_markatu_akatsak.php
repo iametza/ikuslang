@@ -125,8 +125,6 @@
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/jquery.scrollTo.js"></script>
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/popcorn.jplayer.js"></script>
 
-<script type="text/javascript" src="<?php echo URL_BASE; ?>js/itzuliHautapenarenTestuaEtaDenbora.js"></script>
-
 <script type="text/javascript">
 	$(document).ready(function () {
         
@@ -135,12 +133,23 @@
         <?php foreach (hizkuntza_idak() as $h_id) { ?>
 		pop[<?php echo $h_id; ?>] = Popcorn.jplayer("#jquery_jplayer_<?php echo $h_id; ?>", {
 			media: {
+            <?php if ($hitzak_markatu->mota == "bideoa") { ?>
 				m4v: "<?php echo URL_BASE . $hitzak_markatu->bideo_path . $hitzak_markatu->bideo_mp4; ?>",
 				webmv: "<?php echo URL_BASE . $hitzak_markatu->bideo_path . $hitzak_markatu->bideo_webm; ?>"
+            <?php } else if ($hitzak_markatu->mota == "audioa") { ?>
+                mp3: "<?php echo URL_BASE . $hitzak_markatu->audio_path . $hitzak_markatu->audio_mp3; ?>",
+                oga: "<?php echo URL_BASE . $hitzak_markatu->audio_path . $hitzak_markatu->audio_ogg; ?>"
+            <?php } ?>
 			},
 			options: {
-				swfPath: "swf/Jplayer.swf",
-				supplied: "m4v, webmv"
+				swfPath: "<?php echo URL_BASE; ?>swf/",
+                solution: "flash,html", // To prioritize Flash solution.
+			<?php if ($hitzak_markatu->mota == "bideoa") { ?>
+				supplied: "m4v, webmv",
+            <?php } else if ($hitzak_markatu->mota == "audioa") { ?>
+                supplied: "mp3, oga",
+            <?php } ?>
+                size: {width: "300px", height: "168.5px"}
 			}
 		});
 		<?php } ?>
@@ -151,8 +160,6 @@
 		var playSource = true;
 		var tPause = 0;
 		var endTime = null;
-        
-        var hizlariak = <?php echo json_encode($hitzak_markatu->hizlariak); ?>;
         
         // Segundoak * 10 jaso eta hh:mm:ss formatura bihurtzen du.
         function egokituDenboraHHMMSSra(milisegundoak) {
@@ -268,16 +275,7 @@
                     denborak = denborak + akatsak[h_id][i]["hitzak"][j].denbora + ",";
                     
                     // Span-ean hitz okerra jarri eta dagokion klasea gehitu nabarmentzeko.
-                    // Lehen hitza bada eta aurrizkia badauka, gehitu.
-                    if (j === 0 && akatsak[h_id][i]["hitzak"][j].aurrizkia) {
-                        
-                        $("#transkribapena-edukia-" + h_id + " span[data-ms='" + akatsak[h_id][i]["hitzak"][j].denbora + "']").text(akatsak[h_id][i]["hitzak"][j].aurrizkia + " " + akatsak[h_id][i]["hitzak"][j].okerra).addClass("hipertranskribapena-erantzun-okerra");
-                        
-                    } else {
-                        
-                        $("#transkribapena-edukia-" + h_id + " span[data-ms='" + akatsak[h_id][i]["hitzak"][j].denbora + "']").text(akatsak[h_id][i]["hitzak"][j].okerra).addClass("hipertranskribapena-erantzun-okerra");
-                        
-                    }
+                    $("#transkribapena-edukia-" + h_id + " span[data-ms='" + akatsak[h_id][i]["hitzak"][j].denbora + "']").text(akatsak[h_id][i]["hitzak"][j].okerra).addClass("hipertranskribapena-erantzun-okerra");
                     
                 }
                 
@@ -352,7 +350,6 @@
         $(".akatsen-zerrenda").on("click", ".akatsen-zerrenda-akatsa-gorde-botoia", function() {
             
             var zuzeneko_testuak = $(this).parent().parent().prev().text().trim().split(" ");
-            var aurrizkia = $(this).parent().parent().prev().attr("data-aurrizkia");
             var okerreko_testuak = $(this).prev().val().trim().split(" ");
             var denborak = $(this).parent().parent().parent().attr("data-denborak").split(",");
             var id_akatsa = $(this).parent().parent().parent().attr("data-id-akatsa");
@@ -381,7 +378,6 @@
                     id_ariketa: <?php echo $id_ariketa; ?>,
                     id_akatsa: id_akatsa,
                     id_hizkuntza: h_id,
-                    aurrizkia: aurrizkia,
                     zuzeneko_testuak: JSON.stringify(zuzeneko_testuak),
                     okerreko_testuak: JSON.stringify(okerreko_testuak),
                     denborak: JSON.stringify(denborak)
@@ -395,17 +391,7 @@
                 denbora_berriak_katea = denbora_berriak_katea + denborak[0] + ",";
                 
                 // Hasierako hitzaren testua aldatuko dugu.
-                if (aurrizkia) {
-                    
-                    // Aurrizkia badauka gehitu.
-                    $hasierako_spana.text(aurrizkia + " " + okerreko_testuak[0]);
-                    
-                } else {
-                    
-                    $hasierako_spana.text(okerreko_testuak[0]);
-                    
-                }
-                
+                $hasierako_spana.text(okerreko_testuak[0]);
                 
                 // Gainerako hitz zahar guztiak ezabatuko ditugu.
                 for (var i = 1; i < denborak.length; i++) {
@@ -492,23 +478,11 @@
                 var hitzak = [];
                 
                 var ordezkatua = false;
-                var aurrizkia = "";
                 
                 var zerrendan = false;
                 
                 var testua = $(ui.draggable).text();
                 var denbora = $(ui.draggable).attr("data-ms");
-                
-                for (var i = 0; i < hizlariak.length; i++) {
-                    
-                    // Aurrizkia ordezkatu dugun ala ez jakiteko replace-ri funtzio bat pasako diogu.
-                    testua = testua.replace(hizlariak[i].hizkuntzak[h_id].aurrizkia, function() {
-                        ordezkatua = true;
-                        aurrizkia = hizlariak[i].hizkuntzak[h_id].aurrizkia;
-                        return "";
-                    }).trim();
-                    
-                }
                 
                 hitzak.push({"denbora": denbora,
                              "testua": testua
@@ -526,8 +500,6 @@
                     
                 });
                 
-                console.log(ordezkatua);
-                console.log(aurrizkia);
                 console.log(zerrendan);
                 
                 // Hautapena ez badago zerrendan.
@@ -540,8 +512,7 @@
                         data: {
                             id_ariketa: <?php echo $id_ariketa; ?>,
                             id_hizkuntza: h_id,
-                            hitzak: JSON.stringify(hitzak),
-                            aurrizkia: aurrizkia
+                            hitzak: JSON.stringify(hitzak)
                         }
                     })
                     .done(function(data, textStatus, jqXHR) {
@@ -554,7 +525,7 @@
                         katea = "<tr data-denborak='" + denbora + "' data-id-akatsa='" + data["id_akatsa"] + "'>" +
                             "<td>" + egokituDenboraHHMMSSra(denbora) + "</td>" +
                             "<td>" + egokituDenboraHHMMSSra(denbora) + "</td>" +
-                            "<td data-aurrizkia='" + aurrizkia + "'>" + testua + "</td>" +
+                            "<td>" + testua + "</td>" +
                             "<td>" +
                                 "<div class='input-append'>" +
                                     "<input class='akatsen-zerrenda-akatsa-testua' type='text' value='" + testua + "' />" +
@@ -628,6 +599,7 @@
             
             var id_akatsa = $(this).parent().parent().attr("data-id-akatsa");
             var denborak = $(this).parent().parent().attr("data-denborak").split(",");
+            var hitz_zuzena = $(this).parent().prev().prev().text();
             var $that = $(this);
             
             var h_id = $(this).parent().parent().parent().parent().attr("data-h-id");
@@ -646,6 +618,8 @@
                         
                         $("#transkribapena-edukia-" + h_id + " span[data-ms='" + denborak[i] + "']").removeClass("hipertranskribapena-erantzun-okerra");
                         
+                        // Orain akatsak hitz bakarrekoak direnez lehen eskuratutako hitz zuzena sar dezakegu zuzenean.
+                        $("#transkribapena-edukia-" + h_id + " span[data-ms='" + denborak[i] + "']").text(hitz_zuzena);
                     }
                     
                     $that.parent().parent().remove();

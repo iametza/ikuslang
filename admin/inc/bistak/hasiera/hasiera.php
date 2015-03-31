@@ -20,11 +20,6 @@ if (!isset ($url)) header ("Location: /");
     } );
 </script>
 
-<form id="f1" name="f1" method="post" action="<?php echo URL_BASE_ADMIN; ?>" class="form-horizontal" enctype="multipart/form-data" onsubmit="javascript: return verif();">
-    <input type="hidden" name="alerta" value="BAI" />
-    <button type="submit" class="btn"><i class="icon-envelope"></i>&nbsp;Bidali alerta</button>
-</form>
-
 <h3>Nire ikasgelak</h3>
 <table id="nire_ikasgelak" class="table">
     <thead>

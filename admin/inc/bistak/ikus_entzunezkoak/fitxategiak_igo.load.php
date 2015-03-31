@@ -83,15 +83,6 @@
                     
                     $dbo->query($sql) or die($dbo->ShowError());
                     
-                    // Bere hizlariak ere ezabatu
-                    $sql = "DELETE A, B
-                            FROM ikus_entzunezkoak_hizlariak A
-                            INNER JOIN ikus_entzunezkoak_hizlariak B
-                            ON A.id = B.fk_elem
-                            WHERE A.fk_elem = $ezab_id";
-                    
-                    $dbo->query($sql) or die($dbo->ShowError());
-                    
                 }
                 
                 //Redireccionamos.
@@ -345,20 +336,6 @@
             
 		}
         
-        // Hizlari baten ordena aldatu behar bada.
-        if (isset($_GET["oid_hizlaria"])) {
-            
-			$id = $_GET["oid_hizlaria"];
-			$bal = $_GET["bal"];
-			$edit_id = $_GET["edit_id"];
-			
-			orden_automatiko("ikus_entzunezkoak_hizlariak", $id, $bal);
-			
-			header ("Location: " . $url_base . "form/" . $url_param . "&edit_id=" . $edit_id);
-			exit;
-            
-		}
-        
         $sql = "SELECT id, mota, bideo_path, bideo_jatorrizkoa, bideo_mp4, bideo_webm, audio_path, audio_jatorrizkoa, audio_mp3, audio_ogg
                 FROM ikus_entzunezkoak
                 WHERE id = $edit_id";
@@ -366,7 +343,6 @@
         $dbo->query($sql) or die($dbo->ShowError());
         
         $ikus_entzunezkoa = new stdClass();
-        $ikus_entzunezkoa->hizlariak = array();
         
         if ($dbo->emaitza_kopurua() == 1) {
             
@@ -403,39 +379,6 @@
                 $ikus_entzunezkoa->hizkuntzak[$h_id]->azpitituluak = $rowHizk["azpitituluak"];
             }
             
-            $emaitza = get_query("SELECT id, kolorea, orden
-                                  FROM ikus_entzunezkoak_hizlariak
-                                  WHERE fk_elem = $edit_id
-                                  ORDER BY orden");
-            
-            for($i = 0; $i < count($emaitza); $i++) {
-                
-                $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]] = new stdClass();
-                
-                $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]]->id = $emaitza[$i]["id"];
-                $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]]->kolorea = $emaitza[$i]["kolorea"];
-                $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]]->orden = $emaitza[$i]["orden"];
-                
-                $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]]->hizkuntzak = array();
-                
-                foreach (hizkuntza_idak() as $h_id) {
-                    
-                    $sql = "SELECT izena
-                            FROM ikus_entzunezkoak_hizlariak_hizkuntzak
-                            WHERE fk_elem =" . $emaitza[$i]["id"] . " AND fk_hizkuntza = $h_id";
-                    
-                    $dbo->query($sql) or die($dbo->ShowError());
-                    
-                    $rowHizk = $dbo->emaitza();
-                    
-                    $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]]->hizkuntzak[$h_id] = new stdClass();
-                    
-                    $ikus_entzunezkoa->hizlariak[$emaitza[$i]["id"]]->hizkuntzak[$h_id]->izena = $rowHizk["izena"];
-                    
-                }
-                
-            }
-            
         }
         
         $content = "inc/bistak/ikus_entzunezkoak/ikus_entzunezkoa.php";
@@ -470,60 +413,6 @@
                 if (is_file($_SERVER['DOCUMENT_ROOT'] . $emaitza["path_azpitituluak"] . $emaitza["azpitituluak"])) {
                     
                     $editatu_hipertranskribapena->hizkuntzak[$h_id]->azpitituluak_testua = json_encode(file_get_contents($_SERVER['DOCUMENT_ROOT'] . $emaitza["path_azpitituluak"] . $emaitza["azpitituluak"]));
-                }
-                
-                $editatu_hipertranskribapena->hizlariak = array();
-                
-                $emaitza = get_query("SELECT id, kolorea, orden
-                                      FROM ikus_entzunezkoak_hizlariak
-                                      WHERE fk_elem = $edit_id
-                                      ORDER BY orden");
-                
-                for ($i = 0; $i < count($emaitza); $i++) {
-                    
-                    $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]] = new stdClass();
-                    
-                    $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->id = $emaitza[$i]["id"];
-                    $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->kolorea = $emaitza[$i]["kolorea"];
-                    $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->orden = $emaitza[$i]["orden"];
-                    
-                    $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->hizkuntzak = array();
-                    
-                    foreach (hizkuntza_idak() as $h_id) {
-                        
-                        $sql = "SELECT izena, aurrizkia
-                                FROM ikus_entzunezkoak_hizlariak_hizkuntzak
-                                WHERE fk_elem = " . $emaitza[$i]["id"] . " AND fk_hizkuntza = $h_id";
-                        
-                        $dbo->query($sql) or die($dbo->ShowError());
-                        
-                        $rowHizk = $dbo->emaitza();
-                        
-                        $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->hizkuntzak[$h_id] = new stdClass();
-                        
-                        $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->hizkuntzak[$h_id]->izena = $rowHizk["izena"];
-                        $editatu_hipertranskribapena->hizlariak[$emaitza[$i]["id"]]->hizkuntzak[$h_id]->aurrizkia = $rowHizk["aurrizkia"];
-                        
-                    }
-                    
-                }
-                
-                // Transkribapeneko tarteak kargatu
-                $emaitza = get_query("SELECT indizea_hasiera, indizea_amaiera, fk_hizlaria
-                                      FROM ikus_entzunezkoak_tarteak
-                                      WHERE fk_elem = " . $editatu_hipertranskribapena->id_ikus_entzunezkoa . " AND fk_hizkuntza = $h_id");
-                
-                $editatu_hipertranskribapena->hizkuntzak[$h_id]->tarteak = array();
-                
-                foreach ($emaitza as $e) {
-                    
-                    $tmp_tartea = new stdClass();
-                    $tmp_tartea->indizea_hasiera = $e["indizea_hasiera"];
-                    $tmp_tartea->indizea_amaiera = $e["indizea_amaiera"];
-                    $tmp_tartea->id_hizlaria = $e["fk_hizlaria"];
-                    
-                    array_push($editatu_hipertranskribapena->hizkuntzak[$h_id]->tarteak, $tmp_tartea);
-                    
                 }
                 
                 // Transkribapeneko parrafo hasierak kargatu

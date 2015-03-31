@@ -28,7 +28,6 @@
     $dbo->query($sql) or die($dbo->ShowError());
     
     $ikus_entzunezkoa = new stdClass();
-    $ikus_entzunezkoa->hizlariak = array();
     
     if ($dbo->emaitza_kopurua() == 1) {
         

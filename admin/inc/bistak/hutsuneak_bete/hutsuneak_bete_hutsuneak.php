@@ -19,7 +19,7 @@
 
     <div>
         
-        <div id="transkribapena-edukinontzia-<?php echo $h_id; ?>" class="span5">
+        <div id="transkribapena-edukinontzia-<?php echo $h_id; ?>" class="span8">
             
             <div id="jp_container_<?php echo $h_id; ?>" class="jp-container jp-video jp-video-270p">
                 
@@ -75,15 +75,14 @@
             <div id="transkribapena-edukia-<?php echo $h_id; ?>" class="transkribapena-edukia"></div>
         </div>
         
-        <div id="zerrenda-edukinontzia-<?php echo $h_id; ?>" class="span7">
+        <div id="zerrenda-edukinontzia-<?php echo $h_id; ?>" class="span4">
             
-            <button class="gehitu-zerrendara-botoia btn" data-h-id="<?php echo $h_id; ?>">Gehitu zerrendara</button>
+            <div id="hitz-ontzia"></div>
             
             <table id="hutsuneen-zerrenda-<?php echo $h_id; ?>" data-h-id="<?php echo $h_id; ?>" class="hutsuneen-zerrenda table table-striped">
                 <thead>
                     <tr>
-                        <th>Hasiera</th>
-                        <th>Amaiera</th>
+                        <th>Denbora</th>
                         <th>Testua</th>
                         <th width="50"></th>
                     </tr>
@@ -96,6 +95,9 @@
 
 </fieldset>
 <?php } ?>
+
+<script type="text/javascript" src="<?php echo URL_BASE; ?>js/jquery-ui-1.11.1.custom.min.js"></script>
+<script type="text/javascript" src="<?php echo URL_BASE; ?>js/jquery.ui.touch-punch.min.js"></script>
 
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/jquery.jplayer.min.js"></script>
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js_20140219/popcorn.js"></script>
@@ -113,8 +115,6 @@
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/jquery.scrollTo.js"></script>
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/popcorn.jplayer.js"></script>
 
-<script type="text/javascript" src="<?php echo URL_BASE; ?>js/itzuliHautapenarenTestuaEtaDenbora.js"></script>
-
 <script type="text/javascript">
 	$(document).ready(function () {
         
@@ -123,13 +123,23 @@
         <?php foreach (hizkuntza_idak() as $h_id) { ?>
 		pop[<?php echo $h_id; ?>] = Popcorn.jplayer("#jquery_jplayer_<?php echo $h_id; ?>", {
 			media: {
+            <?php if ($hutsuneak_bete->mota == "bideoa") { ?>
 				m4v: "<?php echo URL_BASE . $hutsuneak_bete->bideo_path . $hutsuneak_bete->bideo_mp4; ?>",
 				webmv: "<?php echo URL_BASE . $hutsuneak_bete->bideo_path . $hutsuneak_bete->bideo_webm; ?>"
+            <?php } else if ($hutsuneak_bete->mota == "audioa") { ?>
+                mp3: "<?php echo URL_BASE . $hutsuneak_bete->audio_path . $hutsuneak_bete->audio_mp3; ?>",
+                oga: "<?php echo URL_BASE . $hutsuneak_bete->audio_path . $hutsuneak_bete->audio_ogg; ?>"
+            <?php } ?>
 			},
 			options: {
-				swfPath: "swf/Jplayer.swf",
+				swfPath: "<?php echo URL_BASE; ?>swf/",
+                solution: "flash,html", // To prioritize Flash solution.
+			<?php if ($hutsuneak_bete->mota == "bideoa") { ?>
 				supplied: "m4v, webmv",
-                size: {width: "300px", height: "200px"}
+            <?php } else if ($hutsuneak_bete->mota == "audioa") { ?>
+                supplied: "mp3, oga",
+            <?php } ?>
+                size: {width: "300px", height: "168.5px"}
 			}
 		});
 		<?php } ?>
@@ -140,8 +150,6 @@
 		var playSource = true;
 		var tPause = 0;
 		var endTime = null;
-        
-        var hizlariak = <?php echo json_encode($hutsuneak_bete->hizlariak); ?>;
         
         // Segundoak * 10 jaso eta hh:mm:ss formatura bihurtzen du.
         function egokituDenboraHHMMSSra(milisegundoak) {
@@ -222,6 +230,9 @@
             var $spana;
             var denborak;
             
+            // Hutsunearen testuari kendutako !az karaktereak
+            var kendutako_karaktereak = "";
+            
 			$("#transkribapena-edukia-" + h_id + " span").each(function(i) {  
 				// doing p.transcript on every word is a bit inefficient - wondering if there is a better way
 				p.transcript({
@@ -240,6 +251,8 @@
                 hitz_kopurua = hutsuneak[h_id][i]["hitzak"].length;
                 
                 hutsunearen_testua = "";
+                
+                kendutako_karaktereak = "";
                 
                 denborak = "";
                 
@@ -267,12 +280,29 @@
                 denborak = denborak.slice(0, -1);
                 hutsunearen_testua = $.trim(hutsunearen_testua);
                 
+                while(/[^a-zA-Z0-9]/.test(hutsunearen_testua.charAt(hutsunearen_testua.length - 1))) {
+                    
+                    kendutako_karaktereak = hutsunearen_testua.charAt(hutsunearen_testua.length - 1) + kendutako_karaktereak;
+                    
+                    hutsunearen_testua = hutsunearen_testua.substring(0, hutsunearen_testua.length - 1);
+                    
+                }
+                
+                console.log(kendutako_karaktereak);
+                console.log(hutsunearen_testua);
+                
                 // Lehen hitzaren span-a input text batekin ordezkatu.
                 $("#transkribapena-edukia-" + h_id + " span[data-ms='" + hutsuneak[h_id][i]["hitzak"][0].denbora + "']").replaceWith("<input data-denborak='" + denborak + "' type='text' value='" + hutsunearen_testua + "' readonly='readonly' />");
                 
-                $("#hutsuneen-zerrenda-" + h_id).append("<tr data-id-hutsunea=" + hutsuneak[h_id][i]["id_hutsunea"] + " data-denborak=" + denborak + ">" +
+                if (kendutako_karaktereak.length > 0) {
+                    
+                    $("input[data-denborak='" + denborak + "']").after("<span>" + kendutako_karaktereak + "</span>");
+                    
+                }
+                
+                $("#hutsuneen-zerrenda-" + h_id).append("<tr data-id-hutsunea='" + hutsuneak[h_id][i]["id_hutsunea"] + "' data-denborak='" + denborak + "' data-jatorrizkoa='" + hutsunearen_testua + kendutako_karaktereak + "'>" +
                                                     "<td>" + egokituDenboraHHMMSSra(hutsuneak[h_id][i]["hitzak"][0].denbora) + "</td>" +
-                                                    "<td>" + egokituDenboraHHMMSSra(hutsuneak[h_id][i]["hitzak"][hutsuneak[h_id][i]["hitzak"].length - 1].denbora) + "</td>" +
+                                                    //"<td>" + egokituDenboraHHMMSSra(hutsuneak[h_id][i]["hitzak"][hutsuneak[h_id][i]["hitzak"].length - 1].denbora) + "</td>" +
                                                     "<td>" + hutsunearen_testua + "</td>" +
                                                     "<td><button class='btn hutsuneen-zerrenda-kendu-botoia'>Kendu</button>" +
                                                 "</tr>");
@@ -326,154 +356,119 @@
         
         <?php } ?>
         
-        $(".gehitu-zerrendara-botoia").click(function() {
+        $("#transkribapena-edukia-1 span").draggable({
             
-            var h_id = $(this).attr("data-h-id");
+            revert: "invalid",
+            helper: "clone",
+            drag: function(event, ui) {
+                ui.helper.removeClass("transcript-grey");
+                ui.helper.addClass("hipertranskribapena-arrastatzeko-spana");
+            }
             
-            var hautapena = itzuliHautapenarenTestuaEtaDenbora(hizlariak)["nodoak"];
+        });
+        
+        $("#hitz-ontzia").droppable({
             
-			var zerrendan = false;
-			
-            // Hautapenaren testua.
-            var testua = "";
-            
-            // Hautapenaren hitz guztien denborak komaz banatuta.
-            var denborak = "";
-            
-            // Hautapenaren hasierako eta amaierako denborak.
-            var hasierako_denbora = "";
-            var amaierako_denbora = "";
-            
-            // Hautapenaren hitz kopurua.
-            var hitz_kopurua = hautapena.length;
-            
-            // Zerrendara (taulara) gehituko dugun testu-katea.
-            var katea = "";
-            
-            // Zerbitzarira bidaliko dugun JSON objektua.
-            var hitzak = [];
-            
-			// Hautapena ez dagoela hutsik egiaztatuko dugu aurrena.
-			if (hitz_kopurua > 0) {
-				
-                hasierako_denbora = egokituDenboraHHMMSSra(hautapena[0].denbora);
-                amaierako_denbora = egokituDenboraHHMMSSra(hautapena[hautapena.length - 1].denbora);
+            accept: "#transkribapena-edukia-1 span",
+            drop: function(event, ui) {
                 
-                for (var i = 0; i < hitz_kopurua; i++) {
-                    
-                    // Hitz(ar)en denbora(k) komaz banatutako kate batean lotu.
-                    denborak = denborak + hautapena[i].denbora + ",";
-                    
-                    // Hautatutako hitza(k) zerrendara gehitzeko prestatu.
-                    testua = testua + hautapena[i].testua + " ";
-                    
-                    hitzak.push({"denbora": hautapena[i].denbora,
-                                 "testua": hautapena[i].testua
-                    });
-                    
-                }
+                // Euskaraz da.
+                var h_id = "1";
                 
-                // Amaierako koma eta zuriunea kendu.
-                denborak = denborak.slice(0, -1);
-                testua = testua.trim();
+                // Hautatutako hitzaren testua eta denbora.
+                var testua = $(ui.draggable).text();
+                var denbora = $(ui.draggable).attr("data-ms");
                 
-				// Hautapena zerrendan ez dagoela egiaztatuko dugu.
-				$("#hutsuneen-zerrenda-" + h_id + " tbody tr").each(function() {
+                var hutsunearen_testua = testua;
+                
+                // Hutsunearen testuari kendutako !az karaktereak
+                var kendutako_karaktereak = "";
+                
+                console.log(testua);
+                console.log(denbora);
+                
+                // Hutsune berria zerbitzarira bidali.
+                $.ajax({
+                    type: "POST",
+                    url: "<?php echo URL_BASE; ?>API/v1/hutsuneak-bete/hutsunea",
+                    data: {
+                        id_ariketa: <?php echo $id_ariketa; ?>,
+                        id_hizkuntza: h_id,
+                        hitzak: "[{\"denbora\":\"" + denbora + "\",\"testua\":\"" + testua + "\"}]"
+                    }
+                })
+                .done(function(data, textStatus, jqXHR) {
                     
-                    // Zerrendako elementuaren denborak bat badatoz hautapenarekin.
-					if ($(this).attr("data-denborak") == denborak) {
-                        
-						zerrendan = true;
-                        
-					}
+                    data = JSON.parse(data);
                     
-				});
-				
-                // Hautapena ez badago zerrendan.
-				if (!zerrendan) {
+                    console.log(data);
+                    console.log(textStatus);
                     
-                    // Hutsune berria zerbitzarira bidali.
-                    $.ajax({
-                        type: "POST",
-                        url: "<?php echo URL_BASE; ?>API/v1/hutsuneak-bete/hutsunea",
-                        data: {
-                            id_ariketa: <?php echo $id_ariketa; ?>,
-                            id_hizkuntza: h_id,
-                            hitzak: JSON.stringify(hitzak)
-                        }
-                    })
-                    .done(function(data, textStatus, jqXHR) {
+                    while(/[^a-zA-Z0-9]/.test(testua.charAt(hutsunearen_testua.length - 1))) {
                         
-                        data = JSON.parse(data);
+                        kendutako_karaktereak = hutsunearen_testua.charAt(hutsunearen_testua.length - 1) + kendutako_karaktereak;
                         
-                        console.log(data);
-                        console.log(textStatus);
+                        hutsunearen_testua = hutsunearen_testua.substring(0, hutsunearen_testua.length - 1);
                         
-                        katea = "<tr data-denborak=" + denborak + " data-id-hutsunea=" + data["id_hutsunea"] + ">" +
-                            "<td>" + hasierako_denbora + "</td>" +
-                            "<td>" + amaierako_denbora + "</td>" +
-                            "<td>" + testua + "</td>" +
-                            "<td>" +
-                                "<button class='btn hutsuneen-zerrenda-kendu-botoia'>Kendu</button>" +
-                            "</td>" +
-                        "</tr>";
+                    }
+                    
+                    katea = "<tr data-denborak='" + denbora + "' data-id-hutsunea='" + data["id_hutsunea"] + "' data-jatorrizkoa='" + testua + "'>" +
+                        "<td>" + egokituDenboraHHMMSSra(denbora) + "</td>" +
+                        "<td>" + hutsunearen_testua + "</td>" +
+                        "<td>" +
+                            "<button class='btn hutsuneen-zerrenda-kendu-botoia'>Kendu</button>" +
+                        "</td>" +
+                    "</tr>";
+                    
+                    // Zerrendan dagoeneko elementuak badaude.
+                    if ($("#hutsuneen-zerrenda-" + h_id + " tbody tr").length > 0) {
                         
-                        // Zerrendan dagoeneko elementuak badaude.
-                        if ($("#hutsuneen-zerrenda-" + h_id + " tbody tr").length > 0) {
+                        // Elementua non txertatu jakin behar dugu. Horretarako zerrendako elementuak banan bana pasako ditugu.
+                        $("#hutsuneen-zerrenda-" + h_id + " tbody tr").each(function(index, element) {
                             
-                            // Elementua non txertatu jakin behar dugu. Horretarako zerrendako elementuak banan bana pasako ditugu.
-                            $("#hutsuneen-zerrenda-" + h_id + " tbody tr").each(function(index, element) {
+                            // Elementu berriaren hasiera baino beranduago hasten bada, bere aurretik txertatuko dugu elementu berria.
+                            if ($(this).children(":first").text() > egokituDenboraHHMMSSra(denbora)) {
                                 
-                                // Elementu berriaren hasiera baino beranduago hasten bada, bere aurretik txertatuko dugu elementu berria.
-                                if ($(this).children(":first").text() > hasierako_denbora) {
-                                    
-                                    $(this).before(katea);
-                                    
-                                    // each-etik irtengo gara.
-                                    return false;
-                                }
+                                $(this).before(katea);
                                 
-                                // Azkenengo elementua baino beranduago hasten bada azken elementuaren ondoren txertatu.
-                                if (index == $("#hutsuneen-zerrenda-" + h_id + " tbody tr").length - 1) {
-                                    $(this).after(katea);
-                                }
-                                
-                            });
+                                // each-etik irtengo gara.
+                                return false;
+                            }
                             
-                        } else {
+                            // Azkenengo elementua baino beranduago hasten bada azken elementuaren ondoren txertatu.
+                            if (index == $("#hutsuneen-zerrenda-" + h_id + " tbody tr").length - 1) {
+                                $(this).after(katea);
+                            }
                             
-                            // Ez dago errenkadarik, append besterik gabe.
-                            $("#hutsuneen-zerrenda-" + h_id).append(katea);
-                            
-                        }
+                        });
                         
-                        // Hitz bat baino gehiagoko hutsuneen kasuan bakarrik sartzen da while begizta honetan.
-                        while (--hitz_kopurua) {
-                            
-                            // Span-a ezabatu.
-                            $("#transkribapena-edukia-" + h_id + " span[data-ms='" + hautapena[hitz_kopurua].denbora + "']").remove();
-                            
-                        }
+                    } else {
                         
-                        // Lehen hitzaren span-a input text batekin ordezkatu.
-                        $("#transkribapena-edukia-" + h_id + " span[data-ms='" + hautapena[0].denbora + "']").replaceWith("<input data-denborak='" + denborak + "' type='text' value='" + testua + "' readonly='readonly' />");
+                        // Ez dago errenkadarik, append besterik gabe.
+                        $("#hutsuneen-zerrenda-" + h_id).append(katea);
                         
-                    })
-                    .fail(function(jqXHR, textStatus, errorThrown) {
-                        
-                        console.log(textStatus);
-                        console.log(errorThrown);
-                        
-                        alert("Errore bat gertatu da hutsunea datu-basean gordetzean. Mesedez, saiatu berriro.");
-                    });
+                    }
                     
-				} else {
+                    // Lehen hitzaren span-a input text batekin ordezkatu.
+                    $("#transkribapena-edukia-" + h_id + " span[data-ms='" + denbora + "']").replaceWith("<input data-denborak='" + denbora + "' type='text' value='" + hutsunearen_testua + "' readonly='readonly' />");
                     
-					alert("Hautapena dagoeneko zerrendan dago!");
+                    if (kendutako_karaktereak.length > 0) {
+                        
+                        $("input[data-denborak='" + denbora + "']").after("<span>" + kendutako_karaktereak + "</span>");
+                        
+                    }
                     
-				}
-			}
-		});
+                })
+                .fail(function(jqXHR, textStatus, errorThrown) {
+                    
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    
+                    alert("Errore bat gertatu da hutsunea datu-basean gordetzean. Mesedez, saiatu berriro.");
+                });
+                
+            }
+        });
         
         $(".hutsuneen-zerrenda").on("click", ".hutsuneen-zerrenda-kendu-botoia", function() {
             
@@ -482,7 +477,7 @@
             var denborak = str_denborak.split(",");
             
             // Hutsunearen testuen arraya.
-            var testuak = $(this).parent().prev().text().split(" ");
+            var testuak = $(this).parent().parent().attr("data-jatorrizkoa").split(" ");
             
             var hitz_kopurua = testuak.length;
             
@@ -508,6 +503,12 @@
                         
                         $inputa.before("<span class='transcript-grey' data-ms='" + denborak[i] + "'>" +  testuak[i] + "</span> ");
                         
+                        // Jatorrizko hitzak puntuazio karaktereak badauzka...
+                        if (/[^a-zA-Z0-9]/.test(testuak[i].charAt(testuak[i].length - 1))) {
+                            
+                            $inputa.next().remove();
+                            
+                        }
                     }
                     
                     // Hutsunearen inputa ezabatu.

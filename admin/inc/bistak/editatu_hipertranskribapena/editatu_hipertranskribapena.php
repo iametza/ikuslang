@@ -7,26 +7,13 @@
     
     $(document).ready(function() {
 		var azpitituluak_testuak = [];
-		var hizlariak = [];
 		
 		<?php
 		foreach (hizkuntza_idak() as $h_id) {
 			echo "azpitituluak_testuak[" . $h_id . "] = '" . $editatu_hipertranskribapena->hizkuntzak[$h_id]->azpitituluak_testua . "';";
 		}
-		
-		foreach ($editatu_hipertranskribapena->hizlariak as $elem) {
-			echo "hizlariak[" . $elem->id . "] = {};";
-			echo "hizlariak[" . $elem->id . "].kolorea ='#" . $elem->kolorea . "';";
-            
-            echo "hizlariak[" . $elem->id . "].hizkuntzak = [];";
-            
-            foreach (hizkuntza_idak() as $h_id) {
-                echo "hizlariak[" . $elem->id . "].hizkuntzak[" . $h_id . "] = {};";
-                echo "hizlariak[" . $elem->id . "].hizkuntzak[" . $h_id . "].aurrizkia ='" . $elem->hizkuntzak[$h_id]->aurrizkia . "';";
-            }
-		}
 		?>
-        
+        console.log(azpitituluak_testuak[1]);
         function parseSRT(data, tarteak, parrafo_hasierak, h_id) {
 			var hurrengo_tartea = 0;
 			
@@ -174,13 +161,12 @@
 					// Hiru puntuak kendu (guztiak kentzen ditu baina desberdindu behar litzateke azpititulua sortzean sortutako eta berezkoen artean)
                     stext = stext.replace("...", "");
 					
-					// Tartearen hasiera bada <p> bat gehitu behar dugu hasieran
-					// eta hizlariaren izena stext-en aurretik.
+					// Tartearen hasiera bada <p> bat gehitu behar dugu hasieran.
 					if (tartearen_hasiera_da === true) {
 						
 						console.log(hurrengo_tartea + ". tartearen hasierako lerroa: " +  sub.id);
 						
-						outputString += '<p><span data-ms="' + stime + '">' + hizlariak[tarteak[hurrengo_tartea].id_hizlaria].hizkuntzak[h_id].aurrizkia + " " + stext + '</span> ';
+						outputString += '<p><span data-ms="' + stime + '">' + stext + '</span> ';
 						
 						tartearen_hasiera_da = false;
 						
@@ -227,25 +213,6 @@
 			
 			return outputString;
 		}
-		
-		$(".rolak").change(function() {
-			// Aldatutako select-aren indizea, hizkuntza eta hautatutako balioa
-			var hautatutako_indizea = $(this).attr("data-indizea");
-            var h_id = $(this).attr("data-h-id");
-			var balioa = this.value;
-			
-			// Hautatutako select-aren errenkadako div-aren kolorea aldatu.
-			if (balioa > 0) {
-				
-				// Hizlari bat hautatu bada dagokion kolorea ezarriko dugu.
-				$("#rola-kolorea-" + h_id + "-" + hautatutako_indizea).css("background-color", hizlariak[balioa].kolorea);
-				
-			// Balioa -1 bada, hau da, erabiltzaileak select-a zurian utzi badu.
-			} else if (balioa === '-1') {
-				
-				$("#rola-kolorea-" + h_id + "-" + hautatutako_indizea).css("background-color", "#FFFFFF");
-			}
-		});
         
         $("#editatu-hipertranskribapena-berrezarri").click(function() {
             window.location.href = "<?php echo $url_base . "editatu-hipertranskribapena&edit_id=" . $editatu_hipertranskribapena->id_ikus_entzunezkoa; ?>";
@@ -281,7 +248,6 @@
         function gorde_hipertranskribapena(h_id, atzera_deia) {
             
             var hasierako_indizea = 0; // Tarte baten hasierako indizea. 0ak tarte berri bat hasi behar dugula adierazten du.
-            var momentuko_hizlariaren_id = 0;
             var tarteak = [];
             var tartea = {};
             
@@ -289,59 +255,11 @@
             
             var parrafo_hasierak = [];
             
-            $(".rolak-" + h_id).each(function() {
-                
-                var indizea = parseInt($(this).attr("data-indizea"), 10);
-                tartea = {};
-                
-                // hasierako_indizea 0 bada lehenengo tartearen hasieran gaude.
-                if (hasierako_indizea === 0) {
-                    
-                    hasierako_indizea = indizea;
-                    momentuko_hizlariaren_id = parseInt($(this).val(), 10);
-                    
-                // Bestela, tartea amaitu den egiaztatuko dugu.
-                } else {
-                    
-                    // Hizlaria aldatu bada tartea aurreko indizean amaitu da
-                    // eta berri batean gaude.
-                    if (parseInt($(this).val(), 10) !== -1 && momentuko_hizlariaren_id !== parseInt($(this).val(), 10)) {
-                        // Bukatu den tartearen balioak gordeko ditugu.
-                        tartea["hasiera"] = hasierako_indizea;
-                        tartea["amaiera"] = indizea - 1;
-                        tartea["id_hizlaria"] = momentuko_hizlariaren_id;
-                        
-                        tarteak.push(tartea);
-                        
-                        console.log(tarteak);
-                        
-                        // Eta tarte berriaren hasierako balioak gordeko ditugu.
-                        hasierako_indizea = indizea;
-                        momentuko_hizlariaren_id = parseInt($(this).val(), 10);
-                    }
-                    
-                }
-                
-            });
-            
             // Hipertranskribapenaren amaieran azken tartea itxi
             tartea = {};
             
             tartea["hasiera"] = hasierako_indizea;
             tartea["amaiera"] = $(".rolak").length;
-            tartea["id_hizlaria"] = momentuko_hizlariaren_id;
-            
-            // Erabiltzaileak gutxienez hizlari bat zehaztu badu azken tartea gehituko dugu tarteen zerrendara.
-            if (tartea["id_hizlaria"] !== -1) {
-                
-                tarteak.push(tartea);
-                
-            // Bestela mezu bat erabiliko dugu hizlaririk ez duela zehaztu adierazteko.
-            } else {
-                
-                alert("Oharra: Hipertranskribapena sortuko da, baina bilaketa eta estatistikak erabili nahi badituzu azpitituluko tarteak zein hizlariri dagozkion adierazi behar duzu.");
-                
-            }
             
             $(".parrafo_hasiera_da").each(function() {
                 
@@ -434,18 +352,26 @@
             <table class="table table-bordered table-hover">
                 <tr>
                     <th>&lt;p&gt;</th>
-                    <th>Rol</th>
                     <th>Zbk</th>
                     <th>Denbora</th>
                     <th>Testua</th>
                 </tr>
             <?php
             
-            if (is_file($_SERVER['DOCUMENT_ROOT'] . $editatu_hipertranskribapena->hizkuntzak[$h_id]->path_azpitituluak . $editatu_hipertranskribapena->hizkuntzak[$h_id]->azpitituluak)) {
+			// Automatikoki sortutako azpitituluak erabili behar badira...
+			if (is_file($_SERVER['DOCUMENT_ROOT'] . $auto_azpitituluak)) {
+				
+				$handle = fopen($_SERVER['DOCUMENT_ROOT'] . $auto_azpitituluak, "r");
+				
+			} elseif (is_file($_SERVER['DOCUMENT_ROOT'] . $editatu_hipertranskribapena->hizkuntzak[$h_id]->path_azpitituluak . $editatu_hipertranskribapena->hizkuntzak[$h_id]->azpitituluak)) {
                 
                 // Fitxategia ireki irakurtzeko
                 $handle = fopen($_SERVER['DOCUMENT_ROOT'] . $editatu_hipertranskribapena->hizkuntzak[$h_id]->path_azpitituluak . $editatu_hipertranskribapena->hizkuntzak[$h_id]->azpitituluak, "r");
-                
+				
+			}
+			
+			if ($handle) {
+				
                 // Azpitituluaren zein ataletan gauden jakiteko aldagaia da $kontagailua.
                 // 0 (Zenbagarren azpitituluan gauden): 1
                 // 1 (Hasierako eta bukaerako denbora): 00:00:01,500 -> 00:00:03,500
@@ -470,12 +396,6 @@
                         if ($kontagailua == 0) {
                             echo "<tr>";
                             
-                            // Momentuko azpititulu zenbakia tarte baten hasiera bada dagokion kolorea erabiliko dugu beste tarte bat hasi arte.
-                            if ($editatu_hipertranskribapena->hizkuntzak[$h_id]->tarteak[$tarte_kont]->indizea_hasiera == trim($line)) {
-                                
-                                $kolorea = "#" . $editatu_hipertranskribapena->hizlariak[$editatu_hipertranskribapena->hizkuntzak[$h_id]->tarteak[$tarte_kont]->id_hizlaria]->kolorea;
-                            }
-                            
                             // Parrafo baten hasiera bada, checked jarri behar da.
                             if ($editatu_hipertranskribapena->hizkuntzak[$h_id]->parrafo_hasierak[$p_kont] == trim($line)) {
                                 
@@ -489,27 +409,6 @@
                                 
                             }
                             
-                            echo "<td>";
-                            echo "<select id='rola-selecta-" . trim($line) . "' class='rolak rolak-" . $h_id . "' data-indizea=" . trim($line) . " data-h-id='" . $h_id . "'>";
-                            echo "<option value='-1'>&nbsp;</option>";
-                            
-                            foreach ($editatu_hipertranskribapena->hizlariak as $elem) {
-                                // select-ean tarte horri dagokion hizlaria hautatuko dugu.
-                                if ($editatu_hipertranskribapena->hizkuntzak[$h_id]->tarteak[$tarte_kont]->id_hizlaria == $elem->id) {
-                                    echo "<option value='" . $elem->id . "' selected>" . $elem->hizkuntzak[$h_id]->izena . "</option>";
-                                } else {
-                                    echo "<option value='" . $elem->id . "'>" . $elem->hizkuntzak[$h_id]->izena . "</option>";
-                                }
-                            }
-                            
-                            // Momentuko azpititulu zenbakia tarte baten amaiera bada tarte_kont kontagailua aldatuko dugu.
-                            if ($editatu_hipertranskribapena->hizkuntzak[$h_id]->tarteak[$tarte_kont]->indizea_amaiera == trim($line)) {
-                                
-                                $tarte_kont++;
-                            }
-                            
-                            echo "</select>";
-                            echo "</td>";
                             echo "<td>" . $line . "</td>";
                             $kontagailua++;
                         } else if ($kontagailua == 1) {

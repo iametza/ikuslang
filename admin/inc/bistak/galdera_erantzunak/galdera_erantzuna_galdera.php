@@ -1,67 +1,4 @@
-<?php
-
-    function segundoetatikHHMMSSra($segundoak) {
-      $t = round($segundoak);
-      return sprintf('%02d:%02d:%02d', ($t/3600),($t/60%60), $t%60);
-    }
-
-?>
-
-<script type="text/javascript">
-    
-    function egiaztatuHHMMSS($denbora) {
-        
-        // Denbora hh:mm:ss formatuan dagoela egiaztatuko dugu.
-        if(/(?:[0-1]?[0-9]|[2][1-4]):[0-5]?[0-9]:[0-5]?[0-9]\s?/.test($denbora.val()) === false) {
-            
-            // Erabiltzaileari denboraren formatua ez dela egokia jakinarazi.
-            alert("Denborak hh:mm:ss formatuan egon behar du.");
-            
-            // Fokua denboraren testu-koadroan jarri.
-            $denbora.focus();
-            
-            return false;
-		}
-        
-        return true;
-    }
-    
-	function verif() {
-        
-		var patroi_hutsik = /^\s*$/;
-        
-        // Denborak formatu egokian dauden ala ez adierazten du.
-        var ondo = true;
-        
-        // Hizkuntza desberdinetako denborak formatu egokian daudela egiaztatuko ditugu.
-        $(".denbora").each(function() {
-            
-            // Radio botoiaren hautatzaile hau #ezdatsegit baina beno.
-            if ($(this).prev().children().is(':checked')) {
-                
-                ondo = egiaztatuHHMMSS($(this));
-                
-                // Formatua ez badago ondo each-etik irtengo gara.
-                if (!ondo) {
-                    
-                    return false;
-                    
-                }
-                
-            }
-            
-        });
-        
-        // Hizkuntza batetako denboraren formatua ez badago ondo ez dugu formularioa bidaliko.
-        if (!ondo) {
-            
-            return false;
-            
-        }
-        
-		return (confirm("Ziur zaude galdera gorde nahi duzula?"));
-	}
-</script>
+<link type="text/css" href="<?php echo URL_BASE_ADMIN; ?>css/ikus_entzunezkoak.css" rel="stylesheet" />
 
 <div class="navbar">
 	<div class="navbar-inner">
@@ -145,3 +82,68 @@
 		</div>
 	</form>
 </div>
+
+<script type="text/javascript">
+    
+    <?php
+        
+        function segundoetatikHHMMSSra($segundoak) {
+          $t = round($segundoak);
+          return sprintf('%02d:%02d:%02d', ($t/3600),($t/60%60), $t%60);
+        }
+        
+    ?>
+    
+    function egiaztatuHHMMSS($denbora) {
+        
+        // Denbora hh:mm:ss formatuan dagoela egiaztatuko dugu.
+        if(/(?:[0-1]?[0-9]|[2][1-4]):[0-5]?[0-9]:[0-5]?[0-9]\s?/.test($denbora.val()) === false) {
+            
+            // Erabiltzaileari denboraren formatua ez dela egokia jakinarazi.
+            alert("Denborak hh:mm:ss formatuan egon behar du.");
+            
+            // Fokua denboraren testu-koadroan jarri.
+            $denbora.focus();
+            
+            return false;
+		}
+        
+        return true;
+    }
+    
+	function verif() {
+        
+		var patroi_hutsik = /^\s*$/;
+        
+        // Denborak formatu egokian dauden ala ez adierazten du.
+        var ondo = true;
+        
+        // Hizkuntza desberdinetako denborak formatu egokian daudela egiaztatuko ditugu.
+        $(".denbora").each(function() {
+            
+            // Radio botoiaren hautatzaile hau #ezdatsegit baina beno.
+            if ($(this).prev().children().is(':checked')) {
+                
+                ondo = egiaztatuHHMMSS($(this));
+                
+                // Formatua ez badago ondo each-etik irtengo gara.
+                if (!ondo) {
+                    
+                    return false;
+                    
+                }
+                
+            }
+            
+        });
+        
+        // Hizkuntza batetako denboraren formatua ez badago ondo ez dugu formularioa bidaliko.
+        if (!ondo) {
+            
+            return false;
+            
+        }
+        
+		return (confirm("Ziur zaude galdera gorde nahi duzula?"));
+	}
+</script>

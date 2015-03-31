@@ -14,11 +14,16 @@
     position: absolute;
     text-align: center;
     text-shadow: 2px 2px 6px #000000;
-    width: 480px;
+    width: 300px;
 }
 
 .bideoa-azpitituluak-behean {
-    top: 250px;
+    top: 125px;
+}
+
+.transkribapena-edukia {
+    height: 300px;
+    overflow-y: scroll;
 }
 
 .transkribapena-edukia span, #target-content span  {

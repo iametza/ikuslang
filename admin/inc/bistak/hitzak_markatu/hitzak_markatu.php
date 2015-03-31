@@ -12,7 +12,6 @@
 <table class="table table-bordered table-hover">
 	<thead>
 		<tr>
-			<th width="50">Ordena</th>
             <th width="100">Egoera</th>
 			<th>Izena</th>
 			<th width="130">&nbsp;</th>
@@ -20,18 +19,9 @@
 	</thead>
 	<tbody>
 		<?php
-            $orden_max = orden_max("ariketak", "fk_ariketa_mota = 3");
 			foreach ($elementuak as $elem){
 		?>
 		<tr <?php echo current ($klassak); ?>>
-			<td>
-				<select class="input-mini" name="orden_<?php echo $elem["id"]; ?>" onchange="javascript:document.location='<?php echo $url_base . $url_param; ?>&oid=<?php echo $elem["id"]; ?>&bal=' + this.options[this.selectedIndex].value;">
-					<option value="0">0</option>
-				<?php for ($i=1; $i <= ($elem["orden"] == 0 ? $orden_max+1 : $orden_max); $i++){ ?>
-					<option value="<?php echo $i; ?>"<?php echo $i == $elem["orden"] ? " selected" : ""; ?>><?php echo $i; ?></option>
-				<?php } ?>
-				</select>
-			</td>
             <td>
                 <select class="input" name="egoera_<?php echo $elem["id"]; ?>" onchange="javascript:document.location='<?php echo $url_base . $url_param; ?>&aldatu_egoera_id=<?php echo $elem["id"]; ?>&bal=' + this.options[this.selectedIndex].value;">
                     <option value="0"<?php echo $elem["egoera"] == 0 ? " selected" : ""; ?>>Zirriborroa</option>
@@ -40,7 +30,7 @@
             </td>
 			<td class="td_klik"><?php echo elementuaren_testua("ariketak", "izena", $elem["id"], $hizkuntza["id"]); ?></td>
 			<td class="td_aukerak">
-                <a class="btn" data-toggle="tooltip" title="akatsak" href="<?php echo $url_base; ?>akatsak?id_ariketa=<?php echo $elem['id']; ?>"><i class="icon-list"></i></a>
+                <a class="btn<?php if ($elem["fk_ikus_entzunezkoa"] == 0) { echo ' disabled'; } ?>" data-toggle="tooltip" title="<?php if ($elem["fk_ikus_entzunezkoa"] == 0) { echo 'Ikus-entzunezkoa gehitu akatsak editatu aurretik'; } else { echo 'akatsak'; } ?>" href="<?php echo $url_base; ?>akatsak?id_ariketa=<?php echo $elem['id']; ?>"<?php if ($elem["fk_ikus_entzunezkoa"] == 0) {echo 'onclick="event.preventDefault();"'; } ?>><i class="icon-list"></i></a>
 				<a class="btn" data-toggle="tooltip" title="aldatu" href="<?php echo $url_base . "form" . $url_param; ?>&edit_id=<?php echo $elem["id"]; ?>"><i class="icon-pencil"></i></a>
 				<a class="btn" data-toggle="tooltip" title="ezabatu" href="<?php echo $url_base . "form" .  $url_param; ?>&ezab_id=<?php echo $elem["id"]; ?>" onclick="javascript: return (confirm ('Seguru ezabatu nahi duzula?'));"><i class="icon-trash"></i></a>
 			</td>

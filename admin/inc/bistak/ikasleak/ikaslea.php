@@ -39,7 +39,7 @@
 
 <div class="navbar">
 	<div class="navbar-inner">
-		<div class="brand"><a href="<?php echo URL_BASE_ADMIN; ?>ikasleak">Ikasleak</a> > <?php if ($edit_id) { echo $ikaslea->izena; } else { echo "Gehitu berria"; } ?></div>
+		<div class="brand"><a href="<?php echo URL_BASE_ADMIN; ?>ikasleak">Ikasleak</a> > <?php if ($edit_id) { echo $ikaslea->izena . " " . $ikaslea->abizenak; } else { echo "Gehitu berria"; } ?></div>
 		
 		<div class="pull-right">
 			<a class="btn" href="<?php echo $url_base . $url_param; ?>"><i class="icon-circle-arrow-left"></i>&nbsp;Atzera</a>

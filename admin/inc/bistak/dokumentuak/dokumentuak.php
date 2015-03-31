@@ -24,6 +24,8 @@
     </div>
 </td>
 
+<div>OHARRA: Ariketaren batean erabiltzen diren dokumentuak ezin dira ezabatu.</div>
+
 <?php $klassak = array ('', 'class="info"'); ?>
 <table id="dokumentuak-zerrenda" class="table table-bordered table-hover">
 	<thead>
@@ -41,7 +43,7 @@
 			<td class="td_aukerak">
                 <a class="btn dokumentuak-deskargatu-botoia" data-toggle="modal" title="deskargatu" href="<?php echo URL_BASE . $elem["path_dokumentua"] . $elem["dokumentua"]; ?>"><i class="icon-download"></i></a>
 				<a class="btn" data-toggle="tooltip" title="aldatu" href="<?php echo $url_base . "form" . $url_param; ?>&edit_id=<?php echo $elem["id"]; ?>"><i class="icon-pencil"></i></a>
-				<a class="btn" data-toggle="tooltip" title="ezabatu" href="<?php echo $url_base . "form" .  $url_param; ?>&ezab_id=<?php echo $elem["id"]; ?>" onclick="javascript: return (confirm ('Seguru ezabatu nahi duzula?'));"><i class="icon-trash"></i></a>
+				<a class="btn<?php if ($elem['erabilpenak'] > 0) { echo ' disabled'; } ?>" data-toggle="tooltip" title="<?php if ($elem['erabilpenak'] > 0) { echo 'Ezin da '; } ?>ezabatu" href="<?php if ($elem['erabilpenak'] == 0) { echo $url_base . "form" .  $url_param; ?>&ezab_id=<?php echo $elem["id"]; } ?>" <?php if ($elem['erabilpenak'] == 0) { echo 'onclick="javascript: return (confirm (\'Seguru ezabatu nahi duzula?\'));"'; } else { echo 'onclick="event.preventDefault();"'; } ?>><i class="icon-trash"></i></a>
 			</td>
 		</tr>
 		<?php if (!next($klassak)) { reset($klassak); } } ?>

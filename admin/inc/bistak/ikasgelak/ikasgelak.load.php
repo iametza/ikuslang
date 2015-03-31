@@ -1,5 +1,8 @@
 <?php
 	
+	// GCM alertak bidaltzeko.
+	require_once("inc/libs/GCMPushMessage.php");
+	
 	// kargatu modeloa
 	require('../inc/modeloak/ikasgela_modeloa.php');
 	$IkasgelaModeloa = new IkasgelaModeloa();
@@ -18,7 +21,54 @@
 	$erregistro_datuak['fk_aldatze_erabiltzailea'] = $erabiltzailea->get_id();
     
     $hurrengoa = $url->hurrengoa();
-    
+	
+	if (isset($_POST["alerta"])) {
+		
+		$mezua = isset($_POST["mezua"]) ? mysql_escape_string($_POST["mezua"]) : "";
+		$edit_id = isset($_POST["edit_id"]) ? (int) $_POST["edit_id"] : 0;
+		
+		//------------------------------
+        // Payload data you want to send 
+        // to Android device (will be
+        // accessible via intent extras)
+        //------------------------------
+        
+        $data = array( 'message' => $mezua );
+        
+        //------------------------------
+        // The recipient registration IDs
+        // that will receive the push
+        // (Should be stored in your DB)
+        // 
+        // Read about it here:
+        // http://developer.android.com/google/gcm/
+        //------------------------------
+        
+		// Ikasgela honetako ikasleak hautatu.
+        $sql = "SELECT mota, id_gailua
+                FROM alerta_eskaerak
+				WHERE id_ikaslea IN (SELECT fk_ikaslea FROM ikasgelak_ikasleak WHERE fk_ikasgela = $edit_id)";
+		
+        $dbo->query($sql) or die($dbo->ShowError());
+        
+        $id_ak = array();
+        
+        while($row = $dbo->emaitza()) {
+            
+            $id_ak[] = $row["id_gailua"];
+        
+        }
+		
+        //------------------------------
+        // Call our custom GCM function
+        //------------------------------
+        
+        $gcpm = new GCMPushMessage($apiKey);
+        $gcpm->setDevices($id_ak);
+        $response = $gcpm->send($mezua, array('title' => 'Ikuslang'));
+		
+	}
+	
     if ($hurrengoa === "form") {
         
         $edit_id = isset ($_GET["edit_id"]) ? (int) $_GET["edit_id"] : 0;
@@ -104,9 +154,9 @@
 		$ikasgela = $IkasgelaModeloa->get($edit_id);
 		
 		if(!empty($ikasgela->ikasleak)){
-				foreach($ikasgela->ikasleak as $ikaslea){
-					$ikasle_idak[] = $ikaslea['id'];
-				}
+			foreach($ikasgela->ikasleak as $ikaslea){
+				$ikasle_idak[] = $ikaslea['id'];
+			}
 		}
 			
 				

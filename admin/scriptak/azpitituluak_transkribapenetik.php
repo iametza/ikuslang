@@ -1,14 +1,13 @@
 <?php
-
-define("IKUSLANG_WEB", "/home/httpd/dominios/ikuslang/htdocs-iker/");
-define("IKUSLANG_WEB_BIDEOAK", IKUSLANG_WEB . "bideoak/");
-define("IKUSLANG_WEB_AUDIOAK", IKUSLANG_WEB . "audioak/");
-define("TRANSKRIBAPENETIK_DIR", IKUSLANG_WEB . "transkribapenetik/");
-
 require ("../../inc/db.inc.php");
 require ("../../inc/konfig.inc.php");
 require ("../../inc/libs/dbo.lib.php");
 require ("../../inc/funtzioak/globalak.fun.php");
+
+define("IKUSLANG_WEB_BIDEOAK", IKUSLANG_WEB . "bideoak/");
+define("IKUSLANG_WEB_AUDIOAK", IKUSLANG_WEB . "audioak/");
+define("TRANSKRIBAPENETIK_DIR", IKUSLANG_WEB . "transkribapenetik/");
+
 
 $dbo = new DBO (DB_SERV, DB_USER, DB_PASS, DB_NAME);
 
@@ -46,7 +45,6 @@ $pathinfo = pathinfo($fitxategia);
 
 $fitxategia_ext_gabe = $pathinfo["filename"];
 
-var_dump($pathinfo);
 if(!is_file($fitxategia)){
     $erantzuna = array('erantzuna' => 'Fitxategia ez da aurkitu: ' . $fitxategia);
     echo json_encode($erantzuna);
@@ -73,7 +71,7 @@ if(!is_file($fitxategia)){
     $pathinfo_wav = pathinfo($fitxategia_wav);
     // fitxategia transkribapenetik direkotoriora mugitu wav eta txt-a, aurretik id-a jarri
     $fitxategi_berria = TRANSKRIBAPENETIK_DIR . $row["id"] . "-" . $pathinfo_wav["basename"];
-    if (!copy($fitxategia, $fitxategi_berria)) {
+    if (!copy($fitxategia_wav, $fitxategi_berria)) {
         $erantzuna = array('erantzuna' => 'Fitxategia  ezin izan da kopiatu');
         echo json_encode($erantzuna);
         exit;
@@ -85,6 +83,15 @@ if(!is_file($fitxategia)){
         echo json_encode($erantzuna);
         exit;
     }
+    
+    // markatu ikusentzunezkoa tratatzen ari dela 
+    $sql = "INSERT INTO ikus_entzunezkoak_azpitituluak
+                (fk_elem, transkribapena, azpitituluak, noiz, egoera)
+        VALUES  (".$row["id"].", '', '', NOW(), 'lanean')
+        ";
+  
+    $dbo->query($sql);
+    
     
    $erantzuna = array('erantzuna' => 'Ongi');
     echo json_encode($erantzuna);

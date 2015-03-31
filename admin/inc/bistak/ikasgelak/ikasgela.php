@@ -1,4 +1,15 @@
 <script type="text/javascript">
+	function verifMezua() {
+		// Mezuak ez du hutsik egon behar...
+		if ($("#mezua").val() == "") {
+			alert("Mezua hutsik dago");
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
 	function verif(){
 		return (confirm ("Ikasgela gorde?"));
 	}
@@ -118,6 +129,15 @@
 			
 		</div>
 		<div id="ikasleak" class="tab-pane">
+			<form id="f1" name="f1" method="post" action="<?php echo $url_base . "form" . $url_param . "&edit_id=" . $edit_id; ?>#ikasleak" class="form-horizontal" enctype="multipart/form-data" onsubmit="javascript: return verifMezua();">
+				<fieldset>
+					<input type="hidden" name="alerta" value="BAI" />
+					<input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>" />
+					<label for="mezua">Ikasgela honetako ikasleei tabletera alerta bat bidaltzeko idatzi mezua eta sakatu Bidali alerta botoia.</label>
+					<input type="text" class="input-xxlarge" id="mezua" name="mezua" value="">
+					<button type="submit" class="btn"><i class="icon-envelope"></i>&nbsp;Bidali alerta</button>
+				</fieldset>
+			</form>
 			<form id="f1" name="f1" method="post" action="<?php echo $url_base . "form" . $url_param; ?>" class="form-horizontal" enctype="multipart/form-data" onsubmit="javascript: return verif();">
 				<input type="hidden" name="gorde" value="BAI" />
 				<input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>" />

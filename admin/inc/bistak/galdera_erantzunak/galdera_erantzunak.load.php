@@ -87,21 +87,32 @@
             
             $nice_name = nice_name_hizkuntzak("ariketak", "izena", $edit_id);
             
+            $id_ikus_entzunezkoa = isset($_POST["ikus-entzunezkoa"]) ? (int) $_POST["ikus-entzunezkoa"] : 0;
+            
             if (!is_dbtable_id("ariketak", $edit_id)) {
                 
-                $sql = "INSERT INTO ariketak (egoera, fk_ariketa_mota, orden)
-                        VALUES (0, 2, " . (orden_max("ariketak", "fk_ariketa_mota = 2") + 1) . ")";
+                $sql = "INSERT INTO ariketak (egoera, fk_ariketa_mota, fk_ikus_entzunezkoa)
+                        VALUES (0, 2, $id_ikus_entzunezkoa)";
                 
                 $dbo->query($sql) or die($dbo->ShowError());
+                
                 // id-a eskuratuko dugu
 				$edit_id = db_taula_azken_id("ariketak");
 				
+            } else {
+                
+                $sql = "UPDATE ariketak
+                        SET fk_ikus_entzunezkoa = $id_ikus_entzunezkoa
+                        WHERE id = $edit_id";
+                
+                $dbo->query($sql) or die($dbo->ShowError());
                 
             }
             
             foreach (hizkuntza_idak() as $h_id) {
                 
-                $izena = testu_formatua_sql($_POST["izena_$h_id"]);
+                $izena = isset($_POST["izena_$h_id"]) ? testu_formatua_sql($_POST["izena_$h_id"]) : "";
+                $azalpena = isset($_POST["azalpena_$h_id"]) ? testu_formatua_sql($_POST["azalpena_$h_id"]) : "";
                 $nice = $nice_name[$h_id];
                 
                 // Errenkada dagoeneko existitzen den egiaztatuko dugu.
@@ -112,11 +123,11 @@
 				$dbo->query($sql) or die($dbo->ShowError());
                 
 				if ($dbo->emaitza_kopurua() == 0) {
-					$sql = "INSERT INTO ariketak_hizkuntzak (izena, nice_name, fk_elem, fk_hizkuntza)
-                            VALUES ('$izena', '$nice', '$edit_id', '$h_id')";
+					$sql = "INSERT INTO ariketak_hizkuntzak (izena, azalpena, nice_name, fk_elem, fk_hizkuntza)
+                            VALUES ('$izena', '$azalpena', '$nice', '$edit_id', '$h_id')";
 				} else {
 					$sql = "UPDATE ariketak_hizkuntzak
-                            SET izena = '$izena', nice_name = '$nice' WHERE fk_elem = '$edit_id' AND fk_hizkuntza = '$h_id'";
+                            SET izena = '$izena', azalpena = '$azalpena', nice_name = '$nice' WHERE fk_elem = '$edit_id' AND fk_hizkuntza = '$h_id'";
 				}
                 
 				$dbo->query($sql) or die($dbo->ShowError());
@@ -129,6 +140,23 @@
                 
             }
             
+            // Ariketa honen dokumentuen datuak gorde
+            $dokumentuak = isset($_POST["dokumentuak"]) ? $_POST["dokumentuak"] : array();
+            
+            // 1. ezabatu, 2.gorde
+            $sql = "DELETE FROM ariketa_dokumentua
+                    WHERE fk_ariketa = " . $edit_id;
+            $dbo->query($sql) or die($dbo->ShowError());
+            
+            foreach($dokumentuak as $dokumentua) {
+                
+                $dokumentua = trim($dokumentua);
+                
+                $sql = "INSERT INTO ariketa_dokumentua (fk_ariketa, fk_dokumentua)
+                        VALUES ($edit_id, $dokumentua)";
+                $dbo->query($sql) or die($dbo->ShowError());
+                
+            }
 			
 			//erregistro datuak gorde
 			$erregistro_datuak['fk_elementua'] = $edit_id;
@@ -154,7 +182,7 @@
             $galdera_erantzuna->id = $row["id"];
             $galdera_erantzuna->orden = $row["orden"];
             
-            $sql = "SELECT B.mota, B.bideo_path, B.bideo_mp4, bideo_webm, B.audio_path, B.audio_mp3, B.audio_ogg
+            $sql = "SELECT B.id, B.mota, B.bideo_path, B.bideo_mp4, bideo_webm, B.audio_path, B.audio_mp3, B.audio_ogg
                     FROM ariketak AS A
                     INNER JOIN ikus_entzunezkoak AS B
                     ON A.fk_ikus_entzunezkoa = B.id
@@ -164,6 +192,7 @@
             
             $galdera_erantzuna->ikus_entzunezkoa = new stdClass();
             
+            $galdera_erantzuna->ikus_entzunezkoa->id = $emaitza[0]["id"];
             $galdera_erantzuna->ikus_entzunezkoa->mota = $emaitza[0]["mota"];
             $galdera_erantzuna->ikus_entzunezkoa->bideo_path = $emaitza[0]["bideo_path"];
             $galdera_erantzuna->ikus_entzunezkoa->bideo_mp4 = $emaitza[0]["bideo_mp4"];
@@ -172,7 +201,7 @@
             $galdera_erantzuna->ikus_entzunezkoa->audio_mp3 = $emaitza[0]["audio_mp3"];
             $galdera_erantzuna->ikus_entzunezkoa->audio_ogg = $emaitza[0]["audio_ogg"];
             
-            $sql = "SELECT C.izenburua, B.path_dokumentua, B.dokumentua
+            $sql = "SELECT B.id, C.izenburua, B.path_dokumentua, B.dokumentua
                     FROM ariketa_dokumentua AS A
                     INNER JOIN dokumentuak AS B
                     ON A.fk_dokumentua = B.id
@@ -188,6 +217,7 @@
                 
                 $tmp_dokumentua = new stdClass();
                 
+                $tmp_dokumentua->id = $row["id"];
                 $tmp_dokumentua->izenburua = $row["izenburua"];
                 $tmp_dokumentua->path_dokumentua = $row["path_dokumentua"];
                 $tmp_dokumentua->dokumentua = $row["dokumentua"];
@@ -199,7 +229,7 @@
             
             foreach (hizkuntza_idak() as $h_id) {
                 
-                $sql = "SELECT izena
+                $sql = "SELECT izena, azalpena
                         FROM ariketak_hizkuntzak
                         WHERE fk_elem = $edit_id
                         AND fk_hizkuntza = $h_id";
@@ -211,9 +241,28 @@
                 $galdera_erantzuna->hizkuntzak[$h_id] = new stdClass();
                 
                 $galdera_erantzuna->hizkuntzak[$h_id]->izena = $rowHizk["izena"];
+                $galdera_erantzuna->hizkuntzak[$h_id]->azalpena = $rowHizk["azalpena"];
                 
             }
+            
         }
+        
+        $sql = "SELECT A.id, A.bideo_path, A.bideo_mp4, A.bideo_webm, A.audio_path, A.audio_mp3, A.audio_ogg, A.mota, B.izenburua
+                FROM ikus_entzunezkoak AS A
+                INNER JOIN ikus_entzunezkoak_hizkuntzak AS B
+                ON A.id = B.fk_elem
+                WHERE B.fk_hizkuntza = " . $hizkuntza["id"] . " AND A.mota != '' AND A.mota IS NOT NULL
+                ORDER BY B.izenburua ASC";
+        
+        $ikus_entzunezkoak = get_query($sql);
+        
+        $sql = "SELECT A.id, B.izenburua, A.path_dokumentua, A.dokumentua
+                FROM dokumentuak AS A
+                INNER JOIN dokumentuak_hizkuntzak AS B
+                ON A.id = B.fk_elem AND A.dokumentua IS NOT NULL
+                WHERE B.fk_hizkuntza = " . $hizkuntza["id"];
+        
+        $dokumentuak = get_query($sql);
         
         $content = "inc/bistak/galdera_erantzunak/galdera_erantzuna.php";
         
@@ -562,19 +611,6 @@
 		
     } else {
         
-        // Erabiltzaileak ariketen ordena aldatu badu.
-        if (isset($_GET["oid"])) {
-            
-			$id = $_GET["oid"];
-			$bal = $_GET["bal"];
-            
-			orden_automatiko("ariketak", $id, $bal, "fk_ariketa_mota = 2");
-            
-			header ("Location: " . $url_base . $url_param);
-			exit;
-            
-		}
-        
         // Erabiltzaileak ariketa baten egoera checkbox-aren balioa aldatu badu.
         if (isset($_GET["aldatu_egoera_id"])) {
             
@@ -599,11 +635,13 @@
             header("Location: " . $url_base . $url_param);
         }
         
-        $sql = "SELECT *
-                FROM ariketak
-                WHERE fk_ariketa_mota = 2
-                ORDER BY orden ASC";
-		
+        $sql = "SELECT A.*
+                FROM ariketak AS A
+                INNER JOIN ariketak_hizkuntzak AS B
+                ON A.id = B.fk_elem
+                WHERE A.fk_ariketa_mota = 2
+                ORDER BY B.izena ASC";
+        
 		$orrikapena = orrikapen_datuak ($sql, $p);
 		$sql .= " LIMIT " . $orrikapena["limitInf"] . "," . $orrikapena["tamPag"];
         

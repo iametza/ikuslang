@@ -1,23 +1,3 @@
-<script type="text/javascript">
-	function verif(){
-		var patroi_hutsik = /^\s*$/;
-        
-		return (confirm ("Ariketa gorde nahi duzu?"));
-	}
-    
-    $(document).ready(function() {
-        
-        // Ariketa honi dagozkion etiketak zerbitzaritik eskuratu eta bistaratuko ditugu tagsManager erabiliz
-        // eta typeahead hasieratuko dugu.
-        $(".tm-input").etiketatu({
-            bidea: '<?php echo URL_BASE; ?>API/v1/etiketak',
-            id: '<?php echo $edit_id; ?>',
-            mota: 'ariketa'
-        });
-        
-    });
-</script>
-
 <div class="navbar">
 	<div class="navbar-inner">
 		<div class="brand"><a href="<?php echo URL_BASE_ADMIN; ?>esaldiak_zuzendu">Esaldiak zuzendu</a> > <?php if ($edit_id) { echo $esaldiak_zuzendu->hizkuntzak[$h_id]->izena; } else { echo "Gehitu berria"; } ?></div>
@@ -33,6 +13,38 @@
 		<input type="hidden" name="gorde" value="BAI" />
 		<input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>" />
 		
+        <fieldset>
+            <legend><strong>Dokumentuak</strong></legend>
+            
+            <div class="control-group">
+			    <select id="konbo-dokumentuak" class="input-xxlarge" name="dokumentuak[]" multiple="multiple">
+					<?php foreach($dokumentuak as $dokumentua){?>
+                        <option 
+                        <?php if ($esaldiak_zuzendu->dokumentuak) {
+                            foreach($esaldiak_zuzendu->dokumentuak as $ariketaren_dokumentua) { ?>
+                            <?php if($ariketaren_dokumentua->id == $dokumentua["id"]){?>selected="selected"<?php }?>
+                        <?php
+                            }
+                        }
+                        ?>
+                        value="<?=$dokumentua['id']?>" ><?php echo $dokumentua['izenburua']; ?></option>
+					<?php }?>
+				</select>
+			   
+			</div>
+            
+            <div id="dokumentuak-zerrenda">
+                <?php if (count($esaldiak_zuzendu->dokumentuak) > 0) { ?>
+                    <?php foreach ($esaldiak_zuzendu->dokumentuak as $dokumentua) { ?>
+                    <div><a href="<?php echo URL_BASE . $dokumentua->path_dokumentua . $dokumentua->dokumentua; ?>"><?php echo $dokumentua->izenburua; ?></a></div>
+                    <?php } ?>
+                    
+                <? } else { ?>
+                    <div>Esaldiak zuzendu ariketa honek ez dauka dokumenturik oraindik.</div>
+                <?php } ?>
+            </div>
+        </fieldset>
+        
 		<?php
 			foreach (hizkuntza_idak() as $h_id){
 		?>
@@ -42,6 +54,11 @@
 			<div class="control-group">
 				<label for="izena_<?php echo $h_id; ?>">Izena:</label>
 				<input class="input-xxlarge" type="text" id="izena_<?php echo $h_id; ?>" name="izena_<?php echo $h_id; ?>" value="<?php echo testu_formatua_input ($esaldiak_zuzendu->hizkuntzak[$h_id]->izena); ?>" />
+			</div>
+            
+			<div class="control-group">
+				<label for="azalpena_<?php echo $h_id; ?>">Azalpena:</label>
+				<textarea class="input-xxlarge" id="azalpena_<?php echo $h_id; ?>" name="azalpena_<?php echo $h_id; ?>"><?php echo testu_formatua_input($esaldiak_zuzendu->hizkuntzak[$h_id]->azalpena); ?></textarea>
 			</div>
             
             <div class="control-group">
@@ -60,3 +77,57 @@
 		</div>
 	</form>
 </div>
+
+<script src="<?php echo URL_BASE; ?>js/chosen/chosen.jquery.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	function verif() {
+		var patroi_hutsik = /^\s*$/;
+        
+		return (confirm ("Ariketa gorde nahi duzu?"));
+	}
+    
+    $(document).ready(function() {
+        
+        $("#konbo-dokumentuak").chosen({
+            placeholder_text_multiple : "Aukeratu dokumentua(k)...",
+            no_results_text : "Emaitzarik ez"
+        }).change(function() {
+            
+            // Dokumentuen zerrenda garbitu
+            $("#dokumentuak-zerrenda").empty();
+            
+            // Zerrendako elementu guztiak kargatu.
+            $("#konbo-dokumentuak option:selected").each(function() {
+                
+                $.ajax({
+                    
+                    type: "GET",
+                    dataType: "json",
+                    url: "<?php echo URL_BASE; ?>API/v1/dokumentuak/" + $(this).val()
+                    
+                }).done(function(data, textStatus, jqXHR) {
+                    
+                    $("#dokumentuak-zerrenda").append("<div><a href='<?php echo URL_BASE; ?>" + data.path_dokumentua + data.dokumentua + "'>" + data.izenburua + "</a></div>");
+                    
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    
+                    console.log("Errore bat gertatu da zerbitzaritik dokumentuen datuak eskuratzean.");
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                    
+                });
+            });
+        });
+        
+        // Ariketa honi dagozkion etiketak zerbitzaritik eskuratu eta bistaratuko ditugu tagsManager erabiliz
+        // eta typeahead hasieratuko dugu.
+        $(".tm-input").etiketatu({
+            bidea: '<?php echo URL_BASE; ?>API/v1/etiketak',
+            id: '<?php echo $edit_id; ?>',
+            mota: 'ariketa'
+        });
+        
+    });
+</script>

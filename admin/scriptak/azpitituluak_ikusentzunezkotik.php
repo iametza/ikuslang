@@ -1,5 +1,4 @@
 <?php
-
 require ("../../inc/db.inc.php");
 require ("../../inc/konfig.inc.php");
 require ("../../inc/libs/dbo.lib.php");
@@ -8,7 +7,6 @@ require ("../../inc/funtzioak/globalak.fun.php");
 define("IKUSLANG_WEB_BIDEOAK", IKUSLANG_WEB . "bideoak/");
 define("IKUSLANG_WEB_AUDIOAK", IKUSLANG_WEB . "audioak/");
 define("MUGITZEKO_DIR", IKUSLANG_WEB . "mugitzeko/");
-
 
 
 $dbo = new DBO (DB_SERV, DB_USER, DB_PASS, DB_NAME);
@@ -86,7 +84,7 @@ if(!is_file($fitxategia)){
                 (fk_elem, transkribapena, azpitituluak, noiz, egoera)
         VALUES  (".$row["id"].", '', '', NOW(), 'lanean')
         ";
-   echo $sql;
+  
     $dbo->query($sql);
     
     

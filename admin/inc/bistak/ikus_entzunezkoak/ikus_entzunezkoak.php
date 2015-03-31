@@ -35,6 +35,8 @@
     
 <?php } ?>
 
+<div class="alert">OHARRA: Ariketaren batean erabiltzen diren ikus-entzunezkoak ezin dira ezabatu.</div>
+
 <?php $klassak = array ('', 'class="info"'); ?>
 <table id="ikus-entzunezkoak-zerrenda" class="table table-bordered table-hover">
 	<thead>
@@ -56,7 +58,7 @@
 				<a class="btn ikus-entzunezkoa-aurrebista-botoia" data-toggle="modal" title="aurrebista" href="#bideoa-aurrebista" data-id-ikus-entzunezkoa="<?php echo $elem["id"]; ?>"><i class="icon-play"></i></a>
                 <?php } ?>
                 <a class="btn" data-toggle="tooltip" title="aldatu" href="<?php echo $url_base . "form" . $url_param; ?>&edit_id=<?php echo $elem["id"]; ?>"><i class="icon-pencil"></i></a>
-				<a class="btn" data-toggle="tooltip" title="ezabatu" href="<?php echo $url_base . "form" .  $url_param; ?>&ezab_id=<?php echo $elem["id"]; ?>" onclick="javascript: return (confirm ('Seguru ezabatu nahi duzula?'));"><i class="icon-trash"></i></a>
+				<a class="btn<?php if ($elem['erabilpenak'] > 0) { echo ' disabled'; } ?>" data-toggle="tooltip" title="<?php if ($elem['erabilpenak'] > 0) { echo 'Ezin da '; } ?>ezabatu" href="<?php if ($elem['erabilpenak'] == 0) { echo $url_base . "form" .  $url_param; ?>&ezab_id=<?php echo $elem["id"]; } ?>" <?php if ($elem['erabilpenak'] == 0) { echo 'onclick="javascript: return (confirm (\'Seguru ezabatu nahi duzula?\'));"'; } else { echo 'onclick="event.preventDefault();"'; } ?>><i class="icon-trash"></i></a>
 			</td>
 		</tr>
 		<?php if (!next($klassak)) { reset($klassak); } } ?>

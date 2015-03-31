@@ -22,10 +22,7 @@
     <form id="f1" name="f1" method="post" action="<?php echo $url_base . "form" . $url_param; ?>" class="form-horizontal" enctype="multipart/form-data" onsubmit="javascript: return verif();">
         <input type="hidden" name="gorde" value="BAI" />
         <input id="hidden_edit_id" type="hidden" name="edit_id" value="<?php echo $edit_id; ?>" />
-        
-	
-	
-	
+  
 	
     <fieldset>
             
@@ -68,13 +65,14 @@
                 
                 
                 <?php if($ikus_entzunezkoa->azpitituluak_ezagutzailea != ''){?>
-                <p>Aurretik sortu diren azpitituluak / transkribapena:</p>
+                <p>Aurretik sortu diren azpitituluak / transkribapenak:</p>
                 <table>
                     <tr> <?php if($ikus_entzunezkoa->azpitituluak_ezagutzailea != ''){?>
                         <td><a class="btn" id="erabili_azpititulua_btn"><i class="icon-ok"></i></a></td>
                         <td>
-                             <a href="<?php echo URL_BASE; ?>ezagutzailetik/<?php echo $edit_id?>.srt">Azpitituluak</a> <span><?php echo $ikus_entzunezkoa->ezagutzailea_noiz?></span>
-                           
+                             <a href="<?php echo URL_BASE; ?>ezagutzailetik/<?php echo $edit_id?>.srt">Azpitituluak</a>
+							 <span><?php echo $ikus_entzunezkoa->ezagutzailea_noiz?></span>
+							 <a class="btn" href="<?php echo $url_base; ?>editatu-hipertranskribapena?edit_id=<?php echo $edit_id; ?>&auto_azpitituluak=ezagutzailetik/<?php echo $edit_id?>.srt">Editatu hipertranskribapena</a>
                         </td>
                         <?php }else{?>
                         
@@ -105,29 +103,27 @@
         
     <?php  if (is_file($_SERVER['DOCUMENT_ROOT'] . $path . $jatorrizkoa)) {?>
     
-    <?php /* TODO
+    
     <fieldset>
         <legend><strong>Azpitituluak transkribapenetik</strong></legend>
-        
-        
-        <div class="control-group">
+            <div class="control-group">
          
             <p>Alineamendu teknologiaren bitartez azpititulu fitxategi bat sortuko da. Horretarako transkribapen hutsa idatzi edo txertatu hurrengo eremuan:</p>
             <div class="span8">
             <textarea name="transkribapena" id="transkribapena_txtarea" rows="7" style="width:100%"></textarea>
             </div>
             <div class="span3">
-                <button id="transkribapena_kargatu_btn" file_url="<?php echo URL_BASE . $path . $jatorrizkoa?>" class="btn transkribapena_kargatu_btn">Transkribapena kargatu</button>    
+                <button id="transkribapena_kargatu_btn" file_url="<?php echo URL_BASE . $path . $jatorrizkoa?>" class="btn transkribapena_kargatu_btn">Kargatu transkribapena</button>    
             </div> 
             <div class="span8">
-            <button id="azpitituluak_transkribapenetik_sortu_btn" file_url="<?php echo URL_BASE . $path . $jatorrizkoa?>" class="btn">Azpitituluak Sortu</button>
+            <button id="azpitituluak_transkribapenetik_sortu_btn" file_url="<?php echo URL_BASE . $path . $jatorrizkoa?>" class="btn">Sortu azpitituluak</button>
              </div>
             
         </div>
     </fieldset>
-    <?php */?>
+   
     
-    <fieldset>
+    <!--<fieldset>
         <legend><strong>Azpititulu automatikoak</strong></legend>
                
         <div class="control-group" id="azpititulu_automatikoak_edukia">
@@ -144,7 +140,7 @@
             
         </div>
        
-    </fieldset>
+    </fieldset>-->
       
     <?php } ?>    
   
@@ -156,44 +152,6 @@
 </div>
 
 
-
-<?php // MODAL ezagutza_txt?>
-<div id="ezagutza_txt_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="ezagutza_txt_izenburua_etiketa" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            
-        </div>
-        
-        <div class="modal-body">
-		<h3>Zuzendu ezagutza automatikoaren emaitza testua</h3>
-		<p>Amaitzean sakatu "Hurrengoa".</p>
-		<?php // TODO: kargatu dagokion ikusesntzunezkoa?>
-		<div>
-			<div>
-			    <video style="width: 300px" id="bideoa-aurrebista-erreproduktorea" controls>
-				<source id="bideoa-aurrebista-erreproduktorea-mp4" src="<?php echo URL_BASE . BIDEOEN_PATH . "68_Kermanen_esku_lanak.mp4"; ?>" type="video/mp4"></source>
-				<source id="bideoa-aurrebista-erreproduktorea-webm"  src="<?php echo URL_BASE . BIDEOEN_PATH . "68_Kermanen_esku_lanak.webm";?>" type="video/webm"></source>
-			    </video>
-			</div>
-          
-		</div>
-		
-            <div>
-                <input type="hidden" name="gorde" value="BAI" />
-                <input type="hidden" id="ezagutza_txt_file_url" name="ezagutza_txt_file_url" value="" />
-                <textarea style="width:100%" rows="8" id="ezagutza_txt_textarea" name="ezagutza_txt_textarea"></textarea>
-            </div>
-                
-          
-        </div>
-        
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Itxi</button>
-            <button id="ezagutza_txt_hurrengoa_botoia" class="btn btn-primary"  type="submit">Hurrengoa</button>
-        </div>
-    </div>
-</div>
-<?php // END modal_txt?>
 
 <script type="text/javascript" src="<?php echo URL_BASE_ADMIN; ?>js/jscolor/jscolor.js"></script>
 
