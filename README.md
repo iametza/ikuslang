@@ -7,6 +7,7 @@ Konfigurazioa
 Fitxategi hauetako aldagaietan dagozkien balioak jarri behar dira:
 
 inc/db.inc.php
+
 inc/konfig.inc.php
 
 Lizentzia
