@@ -13,14 +13,19 @@
             
             if ((int) $hurrengoa > 0) {
                 
-                $sql = "SELECT A.path_dokumentua, A.dokumentua
+                $sql = "SELECT A.id, A.path_dokumentua, A.dokumentua, B.izenburua, B.azalpena
                         FROM dokumentuak AS A
-                        WHERE id = " . $hurrengoa;
+                        INNER JOIN dokumentuak_hizkuntzak AS B
+                        ON A.id = B.fk_elem
+                        WHERE A.id = $hurrengoa AND B.fk_hizkuntza = " . $hizkuntza["id"];
                 
                 if ($dbo->query($sql)) {
                     
                     $emaitza = $dbo->emaitza();
                     
+                    $erantzuna->id = $emaitza["id"];
+                    $erantzuna->izenburua = $emaitza["izenburua"];
+                    $erantzuna->azalpena = $emaitza["azalpena"];
                     $erantzuna->path_dokumentua = $emaitza["path_dokumentua"];
                     $erantzuna->dokumentua = $emaitza["dokumentua"];
                     
@@ -82,7 +87,7 @@
                 }
                 
                 $etiketak_join = " INNER JOIN dokumentuak_etiketak AS C
-                                   ON A.id = C.fk_dokumentua
+                                   ON A.id = C.fk_elementua
                                    INNER JOIN etiketak AS D
                                    ON C.fk_etiketa = D.id ";
                 

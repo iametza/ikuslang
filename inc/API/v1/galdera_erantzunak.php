@@ -86,7 +86,7 @@
                         $tmp_galdera->denbora = $l["denbora"];
                         
                         // Galdera honi dagozkion erantzunak eskuratu
-                        $erantzunak_emaitza = get_query ("SELECT B.erantzuna as erantzuna, A.zuzena as zuzena " .
+                        $erantzunak_emaitza = get_query ("SELECT A.id, A.zuzena as zuzena, B.erantzuna as erantzuna " .
                                                          "FROM galdera_erantzunak_galdera_erantzunak AS A, galdera_erantzunak_galdera_erantzunak_hizkuntzak AS B " .
                                                          "WHERE A.fk_galdera = '$l[fk_elem]' " .
                                                          "AND A.id = B.fk_elem " .
@@ -102,6 +102,7 @@
                                 
                                 $tmp_erantzuna = new stdClass();
                                 
+                                $tmp_erantzuna->id = $erantzuna_emaitza["id"];
                                 $tmp_erantzuna->erantzuna = $erantzuna_emaitza["erantzuna"];
                                 $tmp_erantzuna->zuzena = $erantzuna_emaitza["zuzena"];
                                 
@@ -109,10 +110,10 @@
                             }
                         }
                         
-                        // Hasi aurreko galderak baleude $galdera->denbora == 0.
+                        // Hasi aurreko galderak baleude $galdera->denbora == '0'.
                         
                         // Amaierako galdera bada...
-                        if ($tmp_galdera->denbora == -1) {
+                        if ($tmp_galdera->denbora == '-1') {
                             
                             array_push($erantzuna->galdera_erantzunak->amaierako_galderak, $tmp_galdera);
                             

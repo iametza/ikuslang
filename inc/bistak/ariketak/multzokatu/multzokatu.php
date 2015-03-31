@@ -40,6 +40,38 @@
     <button id="zuzendu-botoia" class="btn">Zuzendu</button>
 </div>
 
+<div id="emaitzak-modala" class="modal fade" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                
+                <div id="emaitzak-modala-goikoa"><strong>Emaitzak: <?php echo $hitzak_markatu->izena; ?></strong></div>
+                
+            </div>
+            
+            <div class="modal-body">    
+                <span id="emaitzak-modala-emaitzak">
+                    <span id="emaitzak-modala-zuzenak-kontainer">
+                        <img id="emaitzak-modala-zuzenak-irudia" src="<?php echo URL_BASE; ?>img/galdera_erantzunak/zuzen.png">
+                        <span id="emaitzak-modala-zuzenak"></span>
+                    </span>
+                    
+                    <span id="emaitzak-modala-okerrak-kontainer">
+                        <img id="emaitzak-modala-okerrak-irudia" src="<?php echo URL_BASE; ?>img/galdera_erantzunak/oker.png">
+                        <span id="emaitzak-modala-okerrak"></span>
+                    </span>
+                </span>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="emaitzak-modala-ados" type="button" class="btn btn-default">Ados</button>
+            </div>
+            
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <style>
     .sortable {
         height: 403px;
@@ -178,7 +210,14 @@ $(function() {
             }
         )
         .done(function(data) {
-            console.log(data);
+            
+            $("#emaitzak-modala-zuzenak").text(zuzenak.length);
+            $("#emaitzak-modala-okerrak").text(okerrak.length);
+            
+            $("#emaitzak-modala").modal("show", {
+                backdrop: "static"
+            });
+            
         })
         .fail(function() {
         });
@@ -219,6 +258,12 @@ $(function() {
         });
         
     });
-
+    
+    $("#emaitzak-modala-ados").click(function() {
+        
+        $("#emaitzak-modala").modal("hide");
+        
+    });
+    
 });
 </script>

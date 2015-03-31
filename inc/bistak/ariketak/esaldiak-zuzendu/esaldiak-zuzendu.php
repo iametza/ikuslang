@@ -64,8 +64,7 @@
             </div>
             
             <div class="modal-footer">
-                <button id="emaitzak-modala-berriz-hasi" type="button" class="btn btn-default">Berriz hasi</button>
-                <button id="emaitzak-modala-itzuli-nire-txokora" type="button" class="btn btn-default">Itzuli nire txokora</button>
+                <button id="emaitzak-modala-ados" type="button" class="btn btn-default">Ados</button>
             </div>
             
         </div><!-- /.modal-content -->
@@ -77,6 +76,7 @@
 
 <script>
     
+    var esaldien_idak = <?php echo $esaldiak_zuzendu->esaldien_idak; ?>;
     var esaldiak = <?php echo $esaldiak_zuzendu->esaldiak; ?>;
     var ordenak = <?php echo $esaldiak_zuzendu->ordenak; ?>;
     
@@ -87,6 +87,8 @@
     
     var zuzen_kop = 0;
     var oker_kop = 0;
+    var zuzen_idak = [];
+    var oker_idak = [];
     
     // esaldiak arrayak dituen elementuak adina elementu gehituko ditugu array berrira.
     for (var i = 0; i < esaldiak.length; i++) {
@@ -164,9 +166,17 @@
                       + "\n\tPortzentaia: %" + jSonResults.success_rate);*/
                 
                 if (jSonResults.nb_not_valid === 0) {
+                    
                     zuzen_kop++;
+                    
+                    zuzen_idak.push(esaldien_idak[esaldien_ordena[zenbagarren_esaldia]]);
+                    
                 } else {
+                    
                     oker_kop++;
+                    
+                    oker_idak.push(esaldien_idak[esaldien_ordena[zenbagarren_esaldia]]);
+                    
                 }
                 
                 bistaratu_zuzen_kopurua();
@@ -188,15 +198,32 @@
                     
                 } else {
                     
-                    $("#emaitzak-modala-zuzenak").text(zuzen_kop);
-                    $("#emaitzak-modala-okerrak").text(oker_kop);
+                    console.log(zuzen_idak);
+                    console.log(oker_idak);
                     
-                    $("#emaitzak-modala").modal("show", {
-                        backdrop: "static"
+                    $.post("<?php echo URL_BASE; ?>API/v1/esaldiak-ordenatu", {
+                            "id_ariketa": <?php echo $id_ariketa; ?>,
+                            "id_ikasgaia": <?php echo $id_ikasgaia; ?>,
+                            "id_ikaslea": <?php echo $erabiltzailea->get_id(); ?>,
+                            "zuzenak": zuzen_idak,
+                            "okerrak": oker_idak
+                        }
+                    )
+                    .done(function(data) {
+                        
+                        $("#emaitzak-modala-zuzenak").text(zuzen_kop);
+                        $("#emaitzak-modala-okerrak").text(oker_kop);
+                        
+                        $("#emaitzak-modala").modal("show", {
+                            backdrop: "static"
+                        });
+                        
+                        // Berriz hasi botoia gehitu.
+                        $(".jMyPuzzle").append("<input type='button' value='Berriz hasi' id='berriz-hasi-botoia' />");
+                        
+                    })
+                    .fail(function() {
                     });
-                    
-                    // Berriz hasi botoia gehitu.
-                    $(".jMyPuzzle").append("<input type='button' value='Berriz hasi' id='berriz-hasi-botoia' />");
                     
                 }
             }
@@ -224,7 +251,7 @@
             
         });
         
-        $(document).on("click", ".jMyPuzzle #berriz-hasi-botoia, #emaitzak-modala-berriz-hasi", function() {
+        $(document).on("click", ".jMyPuzzle #berriz-hasi-botoia", function() {
             
             // Aldagaiak zeroratuko ditugu.
             zuzen_kop = 0;
@@ -246,9 +273,9 @@
             
         });
         
-        $("#emaitzak-modala-itzuli-nire-txokora").click(function() {
+        $("#emaitzak-modala-ados").click(function() {
             
-            location.href='<?php echo URL_BASE; ?>nire-txokoa';
+            $("#emaitzak-modala").modal("hide");
             
         });
     });

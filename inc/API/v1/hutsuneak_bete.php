@@ -139,7 +139,7 @@
             
             if ($id_ariketa > 0 && $id_hizkuntza > 0) {
                 
-                $sql = "SELECT B.izena, B.azalpena, C.bideo_path, C.bideo_mp4, C.bideo_webm, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
+                $sql = "SELECT B.izena, B.azalpena, C.mota, C.bideo_path, C.bideo_mp4, C.bideo_webm, C.audio_path, C.audio_mp3, C.audio_ogg, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
                     FROM ariketak AS A
                     INNER JOIN ariketak_hizkuntzak AS B
                     ON A.id = B.fk_elem
@@ -156,9 +156,15 @@
                     $erantzuna->hutsuneak_bete->izena = $row["izena"];
                     $erantzuna->hutsuneak_bete->azalpena = $row["azalpena"];
                     
+                    $erantzuna->hutsuneak_bete->mota = $row["mota"];
+                    
                     $erantzuna->hutsuneak_bete->bideo_path = $row["bideo_path"];
                     $erantzuna->hutsuneak_bete->bideo_mp4 = $row["bideo_mp4"];
                     $erantzuna->hutsuneak_bete->bideo_webm = $row["bideo_webm"];
+                    
+                    $erantzuna->hutsuneak_bete->audio_path = $row["audio_path"];
+                    $erantzuna->hutsuneak_bete->audio_mp3 = $row["audio_mp3"];
+                    $erantzuna->hutsuneak_bete->audio_ogg = $row["audio_ogg"];
                     
                     $erantzuna->hutsuneak_bete->path_azpitituluak = $row["path_azpitituluak"];
                     $erantzuna->hutsuneak_bete->azpitituluak = $row["azpitituluak"];

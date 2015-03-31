@@ -4,7 +4,7 @@
         
         $hutsuneak_bete = new stdClass();
         
-        $sql = "SELECT A.id, B.izena, B.azalpena, C.bideo_path, C.bideo_mp4, C.bideo_webm, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
+        $sql = "SELECT A.id, B.izena, B.azalpena, C.mota, C.bideo_path, C.bideo_mp4, C.bideo_webm, C.audio_path, C.audio_mp3, C.audio_ogg, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
                 FROM ariketak AS A
                 INNER JOIN ariketak_hizkuntzak AS B
                 ON A.id = B.fk_elem
@@ -22,9 +22,15 @@
             $hutsuneak_bete->izena = $row["izena"];
             $hutsuneak_bete->azalpena = $row["azalpena"];
             
+            $hutsuneak_bete->mota = $row["mota"];
+            
             $hutsuneak_bete->bideo_path = $row["bideo_path"];
             $hutsuneak_bete->bideo_mp4 = $row["bideo_mp4"];
             $hutsuneak_bete->bideo_webm = $row["bideo_webm"];
+            
+            $hutsuneak_bete->audio_path = $row["audio_path"];
+            $hutsuneak_bete->audio_mp3 = $row["audio_mp3"];
+            $hutsuneak_bete->audio_ogg = $row["audio_ogg"];
             
             $hutsuneak_bete->path_azpitituluak = $row["path_azpitituluak"];
             $hutsuneak_bete->azpitituluak = $row["azpitituluak"];

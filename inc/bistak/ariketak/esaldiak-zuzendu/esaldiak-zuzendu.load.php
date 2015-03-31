@@ -15,6 +15,7 @@
             $esaldiak_zuzendu->izena = $row["izena"];
             $esaldiak_zuzendu->azalpena = $row["azalpena"];
             
+            $tmp_esaldien_idak = array();
             $tmp_esaldiak = array();
             $tmp_ordenak = array();
             
@@ -25,6 +26,8 @@
             $emaitza = get_query($sql);
             
             foreach($emaitza as $errenkada) {
+                
+                $tmp_esaldien_idak[] = $errenkada["id"];
                 
                 $sql = "SELECT testua, ordenak
                         FROM esaldiak_zuzendu_esaldiak_hizkuntzak
@@ -42,6 +45,7 @@
                 
             }
             
+            $esaldiak_zuzendu->esaldien_idak = json_encode($tmp_esaldien_idak);
             $esaldiak_zuzendu->esaldiak = json_encode($tmp_esaldiak);
             
             $esaldiak_zuzendu->ordenak = json_encode($tmp_ordenak);

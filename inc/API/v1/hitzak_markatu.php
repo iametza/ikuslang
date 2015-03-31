@@ -22,7 +22,6 @@
             $id_ariketa = isset($_POST["id_ariketa"]) ? (int) $_POST["id_ariketa"] : 0;
             $id_hizkuntza = isset($_POST["id_hizkuntza"]) ? (int) $_POST["id_hizkuntza"] : 0;
             $hitzak = isset($_POST["hitzak"]) ? json_decode($_POST["hitzak"]) : "";
-            $aurrizkia = isset($_POST["aurrizkia"]) ? testu_formatua_sql($_POST["aurrizkia"]) : "";
             
             if ($id_ariketa > 0 && $id_hizkuntza > 0 && $hitzak) {
                 
@@ -37,19 +36,8 @@
                     
                     foreach($hitzak as $hitza) {
                         
-                        // Lehen hitza bada.
-                        if ($i == 0) {
-                            
-                            // Aurrizkia txertatuko dugu, baldin balego.
-                            $sql = "INSERT INTO hitzak_markatu_akatsa_hitzak (denbora, aurrizkia, zuzena, okerra, fk_akatsa)
-                                    VALUES (" . $hitza->denbora . ", '" . $aurrizkia . "', '" . $hitza->testua . "', '" . $hitza->testua . "', $id_akatsa)";
-                            
-                        } else {
-                            
-                            $sql = "INSERT INTO hitzak_markatu_akatsa_hitzak (denbora, zuzena, okerra, fk_akatsa)
-                                    VALUES (" . $hitza->denbora . ", '" . $hitza->testua . "', '" . $hitza->testua . "', $id_akatsa)";
-                            
-                        }
+                        $sql = "INSERT INTO hitzak_markatu_akatsa_hitzak (denbora, zuzena, okerra, fk_akatsa)
+                                VALUES (" . $hitza->denbora . ", '" . $hitza->testua . "', '" . $hitza->testua . "', $id_akatsa)";
                         
                         if (!$dbo->query($sql)) {
                             
@@ -110,7 +98,6 @@
             $id_akatsa = isset($para["id_akatsa"]) ? (int) $para["id_akatsa"] : 0;
             $id_hizkuntza = isset($para["id_hizkuntza"]) ? (int) $para["id_hizkuntza"] : 0;
             
-            $aurrizkia = isset($para["aurrizkia"]) ? testu_formatua_sql($para["aurrizkia"]) : "";
             $zuzeneko_testuak = isset($para["zuzeneko_testuak"]) ? json_decode($para["zuzeneko_testuak"]) : "";
             $okerreko_testuak = isset($para["okerreko_testuak"]) ? json_decode($para["okerreko_testuak"]) : "";
             $denborak = isset($para["denborak"]) ? json_decode($para["denborak"]) : "";
@@ -127,19 +114,8 @@
                     // Honek arazoak emango ditu testu okerrak eta zuzenak hitz kopuru desberdina dutenean.
                     for ($i = 0; $i < count($okerreko_testuak); $i++) {
                         
-                        // Lehen hitza bada.
-                        if ($i == 0) {
-                            
-                            // Aurrizkia txertatuko dugu, baldin balego.
-                            $sql = "INSERT INTO hitzak_markatu_akatsa_hitzak (denbora, aurrizkia, zuzena, okerra, fk_akatsa)
-                                    VALUES (" . $denborak[$i] . ", '" . $aurrizkia . "', '" . $zuzeneko_testuak[$i] . "', '" . $okerreko_testuak[$i] . "', " . $id_akatsa . ")";
-                            
-                        } else {
-                            
-                            $sql = "INSERT INTO hitzak_markatu_akatsa_hitzak (denbora, zuzena, okerra, fk_akatsa)
-                                    VALUES (" . $denborak[$i] . ", '" . $zuzeneko_testuak[$i] . "', '" . $okerreko_testuak[$i] . "', " . $id_akatsa . ")";
-                            
-                        }
+                        $sql = "INSERT INTO hitzak_markatu_akatsa_hitzak (denbora, zuzena, okerra, fk_akatsa)
+                                VALUES (" . $denborak[$i] . ", '" . $zuzeneko_testuak[$i] . "', '" . $okerreko_testuak[$i] . "', " . $id_akatsa . ")";
                         
                         if (!$dbo->query($sql)) {
                             
@@ -250,7 +226,7 @@
             
             if ($id_ariketa > 0 && $id_hizkuntza > 0) {
                 
-                $sql = "SELECT B.izena, B.azalpena, C.bideo_path, C.bideo_mp4, C.bideo_webm, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
+                $sql = "SELECT B.izena, B.azalpena, C.mota, C.bideo_path, C.bideo_mp4, C.bideo_webm, C.audio_path, C.audio_mp3, C.audio_ogg, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
                         FROM ariketak AS A
                         INNER JOIN ariketak_hizkuntzak AS B
                         ON A.id = B.fk_elem
@@ -267,9 +243,15 @@
                     $erantzuna->hitzak_markatu->izena = $row["izena"];
                     $erantzuna->hitzak_markatu->azalpena = $row["azalpena"];
                     
+                    $erantzuna->hitzak_markatu->mota = $row["mota"];
+                    
                     $erantzuna->hitzak_markatu->bideo_path = $row["bideo_path"];
                     $erantzuna->hitzak_markatu->bideo_mp4 = $row["bideo_mp4"];
                     $erantzuna->hitzak_markatu->bideo_webm = $row["bideo_webm"];
+                    
+                    $erantzuna->hitzak_markatu->audio_path = $row["audio_path"];
+                    $erantzuna->hitzak_markatu->audio_mp3 = $row["audio_mp3"];
+                    $erantzuna->hitzak_markatu->audio_ogg = $row["audio_ogg"];
                     
                     $erantzuna->hitzak_markatu->path_azpitituluak = $row["path_azpitituluak"];
                     $erantzuna->hitzak_markatu->azpitituluak = $row["azpitituluak"];
@@ -296,7 +278,7 @@
                         // Badaezpada ere mantendu egingo dugu.
                         $tmp_akatsa->hitzak = array();
                         
-                        $sql = "SELECT denbora, aurrizkia, zuzena, okerra
+                        $sql = "SELECT denbora, zuzena, okerra
                                 FROM hitzak_markatu_akatsa_hitzak
                                 WHERE fk_akatsa = " . $errenkada['id'] . "
                                 ORDER BY denbora ASC";
@@ -308,7 +290,6 @@
                             $tmp_hitza = new stdClass();
                             
                             $tmp_hitza->denbora = $errenkada["denbora"];
-                            $tmp_hitza->aurrizkia = $errenkada["aurrizkia"];
                             $tmp_hitza->zuzena = $errenkada["zuzena"];
                             $tmp_hitza->okerra = $errenkada["okerra"];
                             

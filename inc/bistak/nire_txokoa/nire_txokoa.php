@@ -48,7 +48,7 @@
         <?php foreach ($ariketak->egindakoak as $egindakoa) { ?>
         <tr>
             <td>
-                <a href="<?php echo URL_BASE . "ariketa/" . $egindakoa["id"]; ?>"><?php echo $egindakoa["izena"]; ?></a>
+                <a href="<?php echo URL_BASE . "ariketa/" . $egindakoa["id"]. "?id_ikasgaia=" . $egindakoa["id_ikasgaia"]; ?>"><?php echo $egindakoa["izena"]; ?></a>
             </td>
             <td><?php echo $egindakoa["ariketa_mota"]; ?></td>
             <td><?php echo $egindakoa["ikasgaia"]; ?></td>

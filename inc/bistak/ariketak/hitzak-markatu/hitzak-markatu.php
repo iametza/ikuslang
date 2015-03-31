@@ -77,6 +77,11 @@
     
 </div>
 
+<div id="zerrenda-edukinontzia" class="col-md-6">
+    <div id="hitz-ontzia"></div>
+    <div id="transkribapena-edukia"></div>
+</div>
+
 <div id="emaitzak-modala" class="modal fade" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -102,18 +107,12 @@
             </div>
             
             <div class="modal-footer">
-                <button id="emaitzak-modala-berriz-hasi" type="button" class="btn btn-default">Berriz hasi</button>
-                <button id="emaitzak-modala-itzuli-nire-txokora" type="button" class="btn btn-default">Itzuli nire txokora</button>
+                <button id="emaitzak-modala-ados" type="button" class="btn btn-default">Ados</button>
             </div>
             
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-<div id="zerrenda-edukinontzia" class="col-md-6">
-    <div id="hitz-ontzia"></div>
-    <div id="transkribapena-edukia"></div>
-</div>
 
 <link type="text/css" href="<?php echo URL_BASE; ?>css/ariketak.css" rel="stylesheet" />
 <link type="text/css" href="<?php echo URL_BASE; ?>css/jplayer-skin/iametza.minimalista/jplayer.iametza.minimalista.css" rel="stylesheet" />
@@ -139,20 +138,27 @@
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/jquery.scrollTo.js"></script>
 <script type="text/javascript" src="<?php echo URL_BASE; ?>js/popcorn.jplayer.js"></script>
 
-<script type="text/javascript" src="<?php echo URL_BASE; ?>js/itzuliHautapenarenTestuaEtaDenbora.js"></script>
-
 <script type="text/javascript">
 	$(document).ready(function () {
 	
 		var pop = Popcorn.jplayer("#jquery_jplayer_1", {
 			media: {
+            <?php if ($hitzak_markatu->mota == "bideoa") { ?>
 				m4v: "<?php echo URL_BASE . $hitzak_markatu->bideo_path . $hitzak_markatu->bideo_mp4; ?>",
 				webmv: "<?php echo URL_BASE . $hitzak_markatu->bideo_path . $hitzak_markatu->bideo_webm; ?>"
+            <?php } else if ($hitzak_markatu->mota == "audioa") { ?>
+                mp3: "<?php echo URL_BASE . $hitzak_markatu->audio_path . $hitzak_markatu->audio_mp3; ?>",
+                oga: "<?php echo URL_BASE . $hitzak_markatu->audio_path . $hitzak_markatu->audio_ogg; ?>"
+            <?php } ?>
 			},
 			options: {
-				swfPath: "swf/Jplayer.swf",
+                solution: "html",
+            <?php if ($hitzak_markatu->mota == "bideoa") { ?>
 				supplied: "m4v, webmv",
-                size: {width: "300px", height: "200px"}
+            <?php } else if ($hitzak_markatu->mota == "audioa") { ?>
+                supplied: "mp3, oga",
+            <?php } ?>
+                size: {width: "300px", height: "225px"}
 			}
 		});
 		
@@ -164,8 +170,6 @@
 		var endTime = null;
         
         var akatsak = <?php echo json_encode($hitzak_markatu->akatsak); ?>;
-        
-        var hizlariak = <?php echo json_encode($hitzak_markatu->hizlariak); ?>;
         
 		function initTranscript(p) {
             
@@ -259,6 +263,13 @@
                 
                 if (!zerrendan) {
                     
+                    // Puntuazio karaktereak kenduko dizkiogu hitzari.
+                    while(/[^a-zA-Z0-9]/.test(spana.text().charAt(spana.text().length - 1))) {
+                        
+                        spana.text(spana.text().substring(0, spana.text().length - 1));
+                        
+                    }
+                    
                     spana.removeClass("transcript-grey");
                     spana.addClass("hitz-ontzia-spana");
                     
@@ -323,6 +334,9 @@
             
             // Elementuaren id-a eskuratuko dugu.
             var id_akatsa;
+            
+            // Ikus-entzunezkoa gelditu.
+            pop.pause();
             
             $("#hitz-ontzia .hitz-ontzia-spana").each(function() {
                 
@@ -454,7 +468,7 @@
             
 		});
 		
-        $("#hasi-berriz-botoia, #emaitzak-modala-berriz-hasi").click(function() {
+        $("#hasi-berriz-botoia").click(function() {
             
             // Hitz ontzia hustu.
             $("#hitz-ontzia").empty();
@@ -465,11 +479,19 @@
             })
             
             $("#emaitzak-modala").modal("hide");
+            
+            $("#zuzendu-botoia").prop('disabled', false);
+            
+            // Ikus-entzunezkoa hasierara eraman.
+            pop.currentTime(0);
+            
         });
         
-        $("#emaitzak-modala-itzuli-nire-txokora").click(function() {
+        $("#emaitzak-modala-ados").click(function() {
             
-            location.href='<?php echo URL_BASE; ?>nire-txokoa';
+            $("#emaitzak-modala").modal("hide");
+            
+            $("#zuzendu-botoia").prop('disabled', true);
             
         });
 	});

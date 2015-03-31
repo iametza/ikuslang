@@ -89,7 +89,7 @@
                 }
                 
                 $etiketak_join = " INNER JOIN ikus_entzunezkoak_etiketak AS C
-                                   ON A.id = C.fk_ikus_entzunezkoa
+                                   ON A.id = C.fk_elementua
                                    INNER JOIN etiketak AS D
                                    ON C.fk_etiketa = D.id ";
                 

@@ -75,6 +75,46 @@
             
         }
         
+    } else if (strtoupper($_SERVER['REQUEST_METHOD']) === 'POST') {
+        
+        $erantzuna->arrakasta = true;
+        
+        $id_ikasgaia = isset($_POST["id_ikasgaia"]) ? (int) $_POST["id_ikasgaia"] : 0;
+        $id_ariketa = isset($_POST["id_ariketa"]) ? (int) $_POST["id_ariketa"] : 0;
+        $id_ikaslea = isset($_POST["id_ikaslea"]) ? (int) $_POST["id_ikaslea"] : 0;
+        $zuzenak = isset($_POST["zuzenak"]) ? $_POST["zuzenak"] : array();
+        $okerrak = isset($_POST["okerrak"]) ? $_POST["okerrak"] : array();
+        
+        $datuak['id_ikasgaia'] = $id_ikasgaia;
+        $datuak['id_ariketa'] = $id_ariketa;
+        $datuak['id_ikaslea'] = $id_ikaslea;
+        $datuak['zuzenak'] = $zuzenak;
+        $datuak['okerrak'] = $okerrak;
+        
+        if ($id_ariketa > 0 && $id_ikasgaia > 0 && $id_ikaslea > 0) {
+            
+            if(!gorde_emaitzak($datuak)) {
+                
+                $erantzuna->arrakasta = false;
+                $erantzuna->mezua = "Errore bat gertatu da emaitza datu-basean gordetzean.";
+                
+            } else {
+                
+                http_response_code(200);
+                
+            }
+            
+        } else {
+            
+            // Bezeroari eskaera ez duela ondo egin jakinaraziko diogu 400 egoera itzuliz.
+            // http://stackoverflow.com/questions/5077871/what-is-the-proper-http-response-code-for-request-without-mandatory-fields
+            http_response_code(400);
+            
+            $erantzuna->arrakasta = false;
+            $erantzuna->mezua = "Ez da datu-basean gorde, datuak falta baitira.";
+            
+        }
+        
     } else {
         
         // Bezeroari eskaera ez duela ondo egin jakinaraziko diogu 400 egoera itzuliz.

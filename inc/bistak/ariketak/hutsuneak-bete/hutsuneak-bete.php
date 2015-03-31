@@ -79,6 +79,38 @@
     <button id="zuzendu-botoia" class="btn">Zuzendu</button>
 </div>
 
+<div id="emaitzak-modala" class="modal fade" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                
+                <div id="emaitzak-modala-goikoa"><strong>Emaitzak: <?php echo $hitzak_markatu->izena; ?></strong></div>
+                
+            </div>
+            
+            <div class="modal-body">    
+                <span id="emaitzak-modala-emaitzak">
+                    <span id="emaitzak-modala-zuzenak-kontainer">
+                        <img id="emaitzak-modala-zuzenak-irudia" src="<?php echo URL_BASE; ?>img/galdera_erantzunak/zuzen.png">
+                        <span id="emaitzak-modala-zuzenak"></span>
+                    </span>
+                    
+                    <span id="emaitzak-modala-okerrak-kontainer">
+                        <img id="emaitzak-modala-okerrak-irudia" src="<?php echo URL_BASE; ?>img/galdera_erantzunak/oker.png">
+                        <span id="emaitzak-modala-okerrak"></span>
+                    </span>
+                </span>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="emaitzak-modala-ados" type="button" class="btn btn-default">Ados</button>
+            </div>
+            
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <link type="text/css" href="<?php echo URL_BASE; ?>css/ariketak.css" rel="stylesheet" />
 <link type="text/css" href="<?php echo URL_BASE; ?>css/jplayer-skin/iametza.minimalista/jplayer.iametza.minimalista.css" rel="stylesheet" />
 <link type="text/css" href="<?php echo URL_BASE; ?>css/bideotranskribapena.css" rel="stylesheet" />
@@ -105,13 +137,22 @@
 	
 		var pop = Popcorn.jplayer("#jquery_jplayer_1", {
 			media: {
+            <?php if ($hutsuneak_bete->mota == "bideoa") { ?>
 				m4v: "<?php echo URL_BASE . $hutsuneak_bete->bideo_path . $hutsuneak_bete->bideo_mp4; ?>",
 				webmv: "<?php echo URL_BASE . $hutsuneak_bete->bideo_path . $hutsuneak_bete->bideo_webm; ?>"
+            <?php } else if ($hutsuneak_bete->mota == "audioa") { ?>
+                mp3: "<?php echo URL_BASE . $hutsuneak_bete->audio_path . $hutsuneak_bete->audio_mp3; ?>",
+                oga: "<?php echo URL_BASE . $hutsuneak_bete->audio_path . $hutsuneak_bete->audio_ogg; ?>"
+            <?php } ?>
 			},
 			options: {
-				swfPath: "swf/Jplayer.swf",
-				supplied: "m4v, webmv",
-                size: {width: "300px", height: "200px"}
+                solution: "html",
+				<?php if ($hutsuneak_bete->mota == "bideoa") { ?>
+                    supplied: "m4v, webmv",
+                <?php } else if ($hutsuneak_bete->mota == "audioa") { ?>
+                    supplied: "mp3, oga",
+                <?php } ?>
+                size: {width: "300px", height: "168.5px"}
 			}
 		});
 		
@@ -133,6 +174,9 @@
             var hutsunearen_testua = "";
             var $spana;
             
+            // Hutsunearen testuari kendutako !az karaktereak
+            var kendutako_karaktereak = "";
+            
 			$("#transkribapena-edukia span").each(function(i) {  
 				// doing p.transcript on every word is a bit inefficient - wondering if there is a better way
 				p.transcript({
@@ -152,6 +196,8 @@
                 
                 hutsunearen_testua = "";
                 
+                kendutako_karaktereak = "";
+                
                 // Hitz bat baino gehiagoko hutsueneen kasuan bakarrik sartzen da while begizta honetan.
                 while (--hitz_kopurua) {
                     
@@ -169,9 +215,28 @@
                 // Bukaerako zuriunea kendu.
                 hutsunearen_testua = $.trim(hutsunearen_testua);
                 
+                console.log(hutsunearen_testua);
+                //console.log(hutsunearen_testua.replace(/\W/g, ''));
+                
+                while(/[^a-zA-Z0-9]/.test(hutsunearen_testua.charAt(hutsunearen_testua.length - 1))) {
+                    
+                    kendutako_karaktereak = hutsunearen_testua.charAt(hutsunearen_testua.length - 1) + kendutako_karaktereak;
+                    
+                    hutsunearen_testua = hutsunearen_testua.substring(0, hutsunearen_testua.length - 1);
+                    
+                }
+                
+                console.log(kendutako_karaktereak);
+                console.log(hutsunearen_testua);
+                
                 // Lehen hitzaren span-a input text batekin ordezkatu.
                 $("span[data-ms='" + hutsuneak[i].hitzak[0].denbora + "']").replaceWith("<input type='text' data-id-hutsunea='" + hutsuneak[i].id + "' data-testua='" + hutsunearen_testua + "' />");
                 
+                if (kendutako_karaktereak.length > 0) {
+                    
+                    $("input[data-id-hutsunea='" + hutsuneak[i].id + "']").after("<span>" + kendutako_karaktereak + "</span>");
+                    
+                }
             }
             
 		}
@@ -224,24 +289,21 @@
                 $(this).val("");
                 $(this).removeClass("zuzena").removeClass("okerra");
             });
-        });
-        
-        $("#egiaztatu-botoia").click(function() {
-            $("#transkribapena-edukia input").each(function() {
-                
-                // Erantzun okerrak ezabatu
-                if($(this).attr("data-testua") === $(this).val()) {
-                    $(this).addClass("zuzena");
-                } else {
-                    $(this).val("");
-                }
-            });
+            
+            $("#zuzendu-botoia").prop('disabled', false);
+            
+            // Ikus-entzunezkoa hasierara eraman.
+            pop.currentTime(0);
+            
         });
         
         $("#zuzendu-botoia").click(function() {
             
             var zuzenak = [];
             var okerrak = [];
+            
+            // Ikus-entzunezkoa gelditu.
+            pop.pause();
             
             $("#transkribapena-edukia input").each(function(index, elem) {
                 
@@ -275,13 +337,28 @@
                 }
             )
             .done(function(data) {
-                console.log(data);
+                
+                $("#emaitzak-modala-zuzenak").text(zuzenak.length);
+                $("#emaitzak-modala-okerrak").text(okerrak.length);
+                
+                $("#emaitzak-modala").modal("show", {
+                    backdrop: "static"
+                });
+                
             })
             .fail(function() {
             });
             
             console.log(zuzenak);
             console.log(okerrak);
+        });
+        
+        $("#emaitzak-modala-ados").click(function() {
+            
+            $("#emaitzak-modala").modal("hide");
+            
+            $("#zuzendu-botoia").prop('disabled', true);
+            
         });
 	});
 </script>

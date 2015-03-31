@@ -42,12 +42,18 @@
             <?php } ?>
 			},
 			options: {
-                swfPath: "swf/Jplayer.swf",
+                //swfPath: "<?php echo URL_BASE; ?>swf/",
+                //solution: "flash,html", // To prioritize Flash solution.
+                solution: "html",
             <?php if ($galdera_erantzuna->ikus_entzunezkoa->mota == "bideoa") { ?>
-				supplied: "m4v, webmv"
+				supplied: "m4v, webmv",
             <?php } else if ($galdera_erantzuna->ikus_entzunezkoa->mota == "audioa") { ?>
-                supplied: "mp3, oga"
+                supplied: "mp3, oga",
             <?php } ?>
+                size: {
+                    width: "300px",
+                    height: "225px"
+                }
 			}
 		});
         
@@ -81,28 +87,49 @@
         <?php
                 
             }
-            
-            // Multimedia amaitzean bistaratu beharreko galderak badaude...
-            if (count($galdera_erantzuna->amaierako_galderak) > 0) {
-                
+           
         ?>
         
         pop.on("ended", function() {
             
-            // Dagokion galdera prestatu.
-            bistaratu_galdera();
-            
-            $("#galderak-modala").modal("show", {
-                backdrop: "static"
-            });
-            
-        });
-        
-        <?php
+            if (amaierako_galderak) {
+                
+                // Dagokion galdera prestatu.
+                bistaratu_galdera();
+                
+                $("#galderak-modala").modal("show", {
+                    backdrop: "static"
+                });
+                
+            } else {
+                
+                $.post("<?php echo URL_BASE; ?>API/v1/galdera-erantzunak",
+                    {
+                        "id_ariketa": <?php echo $id_ariketa; ?>,
+                        "id_ikasgaia": <?php echo $id_ikasgaia; ?>,
+                        "id_ikaslea": <?php echo $erabiltzailea->get_id(); ?>,
+                        "zuzenak": emaitzak.zuzenak,
+                        "okerrak": emaitzak.okerrak
+                    }
+                )
+                .done(function(data) {
+                    
+                    $("#emaitzak-modala-zuzenak").text(emaitzak.zuzenak.length);
+                    $("#emaitzak-modala-okerrak").text(emaitzak.okerrak.length);
+                    
+                    $("#emaitzak-modala").modal("show", {
+                        backdrop: "static"
+                    });
+                    
+                })
+                .fail(function() {
+                });
+                
+                console.log(emaitzak.zuzenak);
+                console.log(emaitzak.okerrak);
                 
             }
-            
-        ?>
+        });
         
         function initTranscript(p) {
             
@@ -572,12 +599,17 @@
                         }
                     )
                     .done(function(data) {
-                        console.log(data);
+                        
+                        $("#emaitzak-modala-zuzenak").text(emaitzak.zuzenak.length);
+                        $("#emaitzak-modala-okerrak").text(emaitzak.okerrak.length);
+                        
+                        $("#emaitzak-modala").modal("show", {
+                            backdrop: "static"
+                        });
+                        
                     })
                     .fail(function() {
                     });
-                    
-                    //alert("Bukatuttuk");
                     
                 } else {
                     
@@ -947,6 +979,12 @@
 			aurrera_klik();
 		});
         
+        $("#emaitzak-modala-ados").click(function() {
+            
+            $("#emaitzak-modala").modal("hide");
+            
+        });
+        
         // Erabiltzaileak transkribapeneko hitz bat klikatzen duenean.
         // Galdera-erantzunen ariketan ez dugu klik gertaera erabiliko,
         // ikasleari ikus-entzunezkoan aurrera eta atzera ibiltzea galarazteko.
@@ -1098,4 +1136,34 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div id="ondo"></div>
+<div id="emaitzak-modala" class="modal fade" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                
+                <div id="emaitzak-modala-goikoa"><strong>Emaitzak: <?php echo $hitzak_markatu->izena; ?></strong></div>
+                
+            </div>
+            
+            <div class="modal-body">    
+                <span id="emaitzak-modala-emaitzak">
+                    <span id="emaitzak-modala-zuzenak-kontainer">
+                        <img id="emaitzak-modala-zuzenak-irudia" src="<?php echo URL_BASE; ?>img/galdera_erantzunak/zuzen.png">
+                        <span id="emaitzak-modala-zuzenak"></span>
+                    </span>
+                    
+                    <span id="emaitzak-modala-okerrak-kontainer">
+                        <img id="emaitzak-modala-okerrak-irudia" src="<?php echo URL_BASE; ?>img/galdera_erantzunak/oker.png">
+                        <span id="emaitzak-modala-okerrak"></span>
+                    </span>
+                </span>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="emaitzak-modala-ados" type="button" class="btn btn-default">Ados</button>
+            </div>
+            
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

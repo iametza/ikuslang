@@ -32,11 +32,6 @@
             require("inc/API/v1/hizkuntzak.php");
             break;
         
-        case "hizlariak":
-            
-            require("inc/API/v1/hizlariak.php");
-            break;
-        
         case "hutsuneak-bete":
             
             require("inc/API/v1/hutsuneak_bete.php");
@@ -72,8 +67,17 @@
             require("inc/API/v1/login.php");
             break;
         
+		case "erregistroa":
+			
+			require("inc/API/v1/erregistroa.php");
+			break;
+		
         case "bidaliGCM":
 			require("inc/API/v1/bidaliGCM.php");
+			break;
+        
+        case "bidaliOharra":
+			require("inc/API/v1/bidaliOharra.php");
 			break;
         
         default:

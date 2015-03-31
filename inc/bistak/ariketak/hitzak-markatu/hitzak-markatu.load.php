@@ -4,7 +4,7 @@
         
         $hitzak_markatu = new stdClass();
         
-        $sql = "SELECT B.izena, B.azalpena, C.id AS id_ikus_entzunezkoa, C.bideo_path, C.bideo_mp4, C.bideo_webm, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
+        $sql = "SELECT B.izena, B.azalpena, C.id AS id_ikus_entzunezkoa, C.mota, C.bideo_path, C.bideo_mp4, C.bideo_webm, C.audio_path, C.audio_mp3, C.audio_ogg, D.path_azpitituluak, D.azpitituluak, D.hipertranskribapena
                 FROM ariketak AS A
                 INNER JOIN ariketak_hizkuntzak AS B
                 ON A.id = B.fk_elem
@@ -22,6 +22,13 @@
             $hitzak_markatu->azalpena = $row["azalpena"];
             
             $hitzak_markatu->id_ikus_entzunezkoa = $row["id_ikus_entzunezkoa"];
+            
+            $hitzak_markatu->mota = $row["mota"];
+            
+            $hitzak_markatu->audio_path = $row["audio_path"];
+            $hitzak_markatu->audio_mp3 = $row["audio_mp3"];
+            $hitzak_markatu->audio_ogg = $row["audio_ogg"];
+            
             $hitzak_markatu->bideo_path = $row["bideo_path"];
             $hitzak_markatu->bideo_mp4 = $row["bideo_mp4"];
             $hitzak_markatu->bideo_webm = $row["bideo_webm"];
@@ -70,28 +77,6 @@
                 }
                 
                 $hitzak_markatu->akatsak[] = $tmp_akatsa;
-                
-            }
-            
-            $sql = "SELECT A.id, B.izena, B.aurrizkia
-                    FROM ikus_entzunezkoak_hizlariak AS A
-                    INNER JOIN ikus_entzunezkoak_hizlariak_hizkuntzak AS B
-                    ON A.id = B.fk_elem
-                    WHERE A.fk_elem = " . $hitzak_markatu->id_ikus_entzunezkoa;
-            
-            $dbo->query($sql) or die($dbo->ShowError());
-            
-            $hitzak_markatu->hizlariak = array();
-            
-            for ($i = 0; $i < count($dbo->emaitza_kopurua()); $i++) {
-                
-                $emaitza = $dbo->emaitza();
-                
-                $hitzak_markatu->hizlariak[$i] = new stdClass();
-                
-                $hitzak_markatu->hizlariak[$i]->id = $emaitza["id"];
-                $hitzak_markatu->hizlariak[$i]->izena = $emaitza["izena"];
-                $hitzak_markatu->hizlariak[$i]->aurrizkia = $emaitza["aurrizkia"];            
                 
             }
             

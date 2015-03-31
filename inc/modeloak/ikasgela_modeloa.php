@@ -18,7 +18,7 @@ class IkasgelaModeloa extends AppModeloa {
         
        
 		// ikasleak lortu
-        $sql = "SELECT i.id as id, CONCAT(i.izena, ' ', i.abizenak) as izen_abizenak
+        $sql = "SELECT i.id as id, CONCAT(i.izena, ' ', i.abizenak) as izen_abizenak, e_posta
             FROM ikasgelak_ikasleak ii LEFT JOIN ikasleak i ON ii.fk_ikaslea = i.id
             WHERE ii.fk_ikasgela = $id";
         //echo $sql;
