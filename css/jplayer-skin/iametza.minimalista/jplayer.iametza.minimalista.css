@@ -3,6 +3,7 @@
     margin-right: auto;
     margin-top: 20px;
     margin-bottom: 20px;
+    position: relative;
 }
 
 div.jp-video-play {
@@ -16,8 +17,8 @@ div.jp-video-270p {
 
 div.jp-video-270p div.jp-video-play {
     /*height: 270px;*/
-    height: 200px;
-    margin-top: -200px;
+    height: 225px;
+    margin-top: -225px;
 }
 div.jp-video div.jp-video-play {
     cursor: pointer;
