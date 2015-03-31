@@ -17,6 +17,12 @@ $erantzuna_obj = json_decode($erantzuna);
 $transkribapena = testu_formatua_sql ($erantzuna_obj->transkribapena);
 $azpitituluak = testu_formatua_sql ($erantzuna_obj->azpitituluak);
 
+// lerro berriak sartu
+$transkribapena = str_replace('\n', "\n", $transkribapena);
+$azpitituluak = str_replace('\n', "\n", $azpitituluak);
+
+// Hau gabe azpitituluetako lerro berriak ez dabiltza behar bezala.
+$azpitituluak = str_replace("\\n", "\n", $azpitituluak);
 
 // datu basean sartu informazioa
 $sql = "INSERT INTO ikus_entzunezkoak_azpitituluak
