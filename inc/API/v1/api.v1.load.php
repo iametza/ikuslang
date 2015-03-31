@@ -71,10 +71,6 @@
 			
 			require("inc/API/v1/erregistroa.php");
 			break;
-		
-        case "bidaliGCM":
-			require("inc/API/v1/bidaliGCM.php");
-			break;
         
         case "bidaliOharra":
 			require("inc/API/v1/bidaliOharra.php");
