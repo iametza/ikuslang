@@ -24,7 +24,7 @@
     </div>
 </td>
 
-<div>OHARRA: Ariketaren batean erabiltzen diren dokumentuak ezin dira ezabatu.</div>
+<div class="alert">OHARRA: Ariketaren batean erabiltzen diren dokumentuak ezin dira ezabatu.</div>
 
 <?php $klassak = array ('', 'class="info"'); ?>
 <table id="dokumentuak-zerrenda" class="table table-bordered table-hover">
