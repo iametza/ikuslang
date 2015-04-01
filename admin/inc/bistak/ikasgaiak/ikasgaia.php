@@ -13,7 +13,7 @@
 	<form id="f1" name="f1" method="post" action="<?php echo $url_base . "form" . $url_param; ?>" class="form-horizontal" enctype="multipart/form-data" onsubmit="javascript: return verif();">
 		<input type="hidden" name="gorde" value="BAI" />
 		<input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>" />
-		<input type="hidden" name="fk_ikasgela" value="<?php echo $ikasgaia->fk_ikasgela; ?>" />
+		<input type="hidden" name="fk_ikasgela" value="<?php echo $fk_ikasgela; ?>" />
 		
 		<fieldset>
             

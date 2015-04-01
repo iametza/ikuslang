@@ -191,9 +191,11 @@
 				<tbody>
 					<?php $klassak = array ('', 'class="info"'); ?>
 					<?php
-						if($ikasgela->ikasgaiak === NULL)
+						if($ikasgela->ikasgaiak === NULL) {
 							$ikasgela->ikasgaiak = array();
-						foreach ($ikasgela->ikasgaiak as $elem){
+						}
+						
+						foreach ($ikasgela->ikasgaiak as $elem) {
 							
 						$ikasgaia_datuak = get_ikasgaia_datuak($elem['id']);
 					?>
@@ -209,7 +211,11 @@
 							
 						</td>
 					</tr>
-					<?php if (!next ($klassak)) reset ($klassak); } ?>
+					<?php if (!next ($klassak)) {
+							reset ($klassak);
+							}
+						}
+					?>
 				</tbody>
 				</table>
 				

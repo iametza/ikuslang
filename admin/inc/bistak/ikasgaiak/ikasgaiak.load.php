@@ -94,8 +94,8 @@
             $erregistro_datuak['fk_elementua'] = $edit_id;
             save_erregistro_datuak($erregistro_datuak);
             
-            // Berbideratu. Ikasgelaren zerrendara berbideratu
-            header("Location: " . URL_BASE_ADMIN . "ikasgaiak/form?edit_id=$edit_id&fk_ikasgela=".$fk_ikasgela);
+            // Berbideratu. Ikasgelaren ikasgai zerrendara berbideratu
+            header("Location: " . URL_BASE_ADMIN . "ikasgelak/form?edit_id=" . $fk_ikasgela . "#ikasgaiak");
             exit;
         }
         
