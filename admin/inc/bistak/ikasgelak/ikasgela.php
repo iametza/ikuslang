@@ -206,7 +206,7 @@
 						<td class="td_aukerak">
 						<a class="btn" data-toggle="tooltip" title="emaitzak" href="<?php echo URL_BASE_ADMIN . "ikasgaiak/emaitzak" . $url_param; ?>&edit_id=<?php echo $elem["id"]."&fk_ikasgela=".$elem["fk_ikasgela"]; ?>"><i class="icon-list"></i></a>
 							<a class="btn" data-toggle="tooltip" title="aldatu" href="<?php echo URL_BASE_ADMIN . "ikasgaiak/form?edit_id=" . $elem["id"]."&fk_ikasgela=".$elem["fk_ikasgela"]; ?>"><i class="icon-pencil"></i></a>
-							<a class="btn" data-toggle="tooltip" title="ezabatu" href="<?php echo URL_BASE_ADMIN . "ikasgaiak/form?" ?>&ezab_id=<?php echo $elem["id"]; ?>" onclick="javascript: return (confirm ('Seguru ezabatu nahi duzula?'));"><i class="icon-trash"></i></a>
+							<a class="btn" data-toggle="tooltip" title="ezabatu" href="<?php echo URL_BASE_ADMIN . "ikasgelak/form?edit_id=" . $elem["fk_ikasgela"] . "&ezab_ikasgaia_id=" . $elem["id"]; ?>" onclick="javascript: return (confirm ('Seguru ezabatu nahi duzula?'));"><i class="icon-trash"></i></a>
 							
 							
 						</td>

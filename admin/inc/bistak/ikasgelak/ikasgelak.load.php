@@ -99,6 +99,21 @@
 			exit;
 		}
         
+		// Ikasgai bat ezabatu behar bada...
+		if (isset($_GET["ezab_ikasgaia_id"])) {
+			
+			$ezab_ikasgaia_id = $_GET["ezab_ikasgaia_id"];
+			
+			$sql = "DELETE FROM ikasgaiak
+					WHERE id = $ezab_ikasgaia_id";
+			
+			$dbo->query($sql) or die($dbo->ShowError());
+			
+			// Berbideratu.
+			header ("Location: " . URL_BASE_ADMIN . "ikasgelak/form?edit_id=" . $edit_id . "#ikasgaiak");
+			exit;
+		}
+		
         // ikasgela bat gehitu edo editatu badu erabiltzaileak.
 		if (isset($_POST["gorde"])) {
 		
