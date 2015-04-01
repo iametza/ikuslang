@@ -257,11 +257,17 @@ $(function() {
             
         });
         
+        // Zuzendu botoia desgaitu, erabiltzaileari Berriz hasi botoia sakatzera behartzeko.
+        $("#zuzendu-botoia").prop('disabled', false);
+        
     });
     
     $("#emaitzak-modala-ados").click(function() {
         
         $("#emaitzak-modala").modal("hide");
+        
+        // Zuzendu botoia berriz ere gaitu.
+        $("#zuzendu-botoia").prop('disabled', true);
         
     });
     
