@@ -112,9 +112,9 @@
             <div class="span8">
             <textarea name="transkribapena" id="transkribapena_txtarea" rows="7" style="width:100%"></textarea>
             </div>
-            <div class="span3">
+            <!--<div class="span3">
                 <button id="transkribapena_kargatu_btn" file_url="<?php echo URL_BASE . $path . $jatorrizkoa?>" class="btn transkribapena_kargatu_btn">Kargatu transkribapena</button>    
-            </div> 
+            </div> -->
             <div class="span8">
             <button id="azpitituluak_transkribapenetik_sortu_btn" file_url="<?php echo URL_BASE . $path . $jatorrizkoa?>" class="btn">Sortu azpitituluak</button>
              </div>
