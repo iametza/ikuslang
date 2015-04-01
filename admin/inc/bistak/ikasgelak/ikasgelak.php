@@ -17,7 +17,7 @@
 			<th>Irakaslea</th>
             <th>Ikasleak</th>
             <th>Ikasgaiak (irekiak/guztira)</th>
-            <th>&nbsp;</th>
+            <th width="85">&nbsp;</th>
         </tr>
     </thead>
     <tbody>

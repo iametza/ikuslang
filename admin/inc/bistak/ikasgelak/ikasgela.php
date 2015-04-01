@@ -185,7 +185,7 @@
 						<th>Hasiera / bukaera data</th>
 						<th>Ariketak</th>
 						
-						<th >&nbsp;</th>
+						<th width="130">&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
