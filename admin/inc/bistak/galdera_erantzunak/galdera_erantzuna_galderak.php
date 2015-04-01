@@ -3,6 +3,7 @@
 		<div class="brand"><a href="<?php echo URL_BASE_ADMIN; ?>galdera-erantzunak">Galdera-erantzunak</a> > <?php echo elementuaren_testua("ariketak", "izena", $id_ariketa, $hizkuntza["id"]); ?> > Galderak</div>
 		
 		<div class="pull-right">
+			<a class="btn" href="<?php echo URL_BASE_ADMIN ?>galdera-erantzunak"><i class="icon-circle-arrow-left"></i>&nbsp;Atzera</a>
 			<a class="btn" href="<?php echo $url_base . "form" . $url_param . "&id_ariketa=" . $id_ariketa; ?>">Gehitu&nbsp;<i class="icon-plus-sign"></i></a>
 		</div>
 	</div>
