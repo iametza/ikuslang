@@ -982,6 +982,9 @@
         $("#emaitzak-modala-ados").click(function() {
             
             $("#emaitzak-modala").modal("hide");
+			
+			// Nire txokora eraman erabiltzailea, bestela berriz Play sakatzean gauza arraroak egiten ditu, azken galderatik hasi...
+			window.location.replace("<?php echo URL_BASE; ?>nire-txokoa");
             
         });
         
