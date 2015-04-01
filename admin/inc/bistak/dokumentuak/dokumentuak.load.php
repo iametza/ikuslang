@@ -59,6 +59,10 @@
                     $dbo->query($sql) or die($dbo->ShowError());
                 }
             }
+			
+			// Berbideratu.
+            header("Location: " . URL_BASE_ADMIN . "dokumentuak");
+			exit;
         }
         
         // Inserciones o modificaciones
