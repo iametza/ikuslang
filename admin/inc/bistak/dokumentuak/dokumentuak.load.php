@@ -54,7 +54,7 @@
                     // Bere etiketak ere ezabatu (ez etiketak berak).
                     $sql = "DELETE
                             FROM dokumentuak_etiketak
-                            WHERE fk_dokumentua = $ezab_id";
+                            WHERE fk_elementua = $ezab_id";
                     
                     $dbo->query($sql) or die($dbo->ShowError());
                 }
